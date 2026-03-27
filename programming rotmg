@@ -1,0 +1,297 @@
+todo
+{
+find all the realm enemys include the xml data edited it and find images and edit then extract all enemy names and create a list
+
+create a function in the xml all code to cycle the whole object list looking for enemys and terrian type like sandshore and then creating a file creating a list for each terrian type
+grouping all enemy in of each terrina type create a list of enemy name for each terrian type in a file
+think updating this create source code to include creating a constant varaible for each enenmy and assigned it correct object id then create a constant of complete list of enemys for each terrain type 
+create a variable for each enemy list with set terrain type
+
+spawner system
+
+need some kind of leveling system experience points gained from killing enemy leveing up when the experience points gained a set amount for each level 20 levels total 
+this is need for rate of progression 
+
+loot drops tables 
+
+
+}
+
+done list day 1
+{
+just had to update the control open world.exw to only update and draw enemy nearby to the player set to 3 distance in the grid_get_nearby in draw and loop function 
+
+testing auto nexus when player health drops below 100
+player health automatically regenerates  while in the nexus
+when player leaves the nexus into the realm world it position the player before it nexus going back to where you left off
+
+add a keyboard key to toggle lighting on or off also for debug display text  done
+
+
+stress tested the system with 2000 spawn enemys randomly they all have the same projectile need a list of enemy names from the game data then should be able to spawn just fine if not idk
+with the list of enemy choose a random on from that then create the enemy with all the correct data 
+change the above one to just spawn gods 450 over the same area using rand function to select a god to enemy to create
+'
+update the grid and enemy to store states and restore them on command to keep enemy alive from going realm to nexus and back to realm
+
+this block of code is used to create a 3 second cooldown from taken damage from the enemy for the player  when returning the world realm each time 
+atom player_unhitable,player_unhitable_timer,player_unhitable_set
+player_unhitable_set=0
+player_unhitable=0
+player_unhitable_timer=0
+
+ if frametime>player_unhitable_timer and player_unhitable_set=0 then
+    player_unhitable=0
+    player_unhitable_set=1
+  end if
+
+}
+
+
+done list day 2
+{
+extract all image from the old kabam swf client 
+add two new sprite sheets to for enemys in the init in the open world.exw
+added a few more enemys to the game from xml data dat17
+fixed a bug when sprite index in xmldata isn't in hex format but decimal
+created a function to create a enemy from name at posision x and y now use the projectile data for that enemy projectile 
+modfiyed the dat17.xml that keeps beach enemys, as projectiles were declared with a id "projectiles id='0'" and the xml parser can't read them with id part so have to remove it
+
+add a list of enemy to spawn and a function to spawn a random one at random location with a set area 
+added in more commands that can type in spawn and teleport changed the color of the input text bar display both work
+
+
+}
+
+
+enemy is shoting me as soon as i enter the realm from the nexus and auto nexus stright back to the nexus
+
+
+{fix enemy shooting projectile as soon as within range even if only just become active only when the enemy_update function is called 
+so to stop that currently enemys use the current time and add 1000 millsecond to it and then the enemy check if the ccurent time is large than next shoot time 
+
+you what to keep that mechicism but remove the actually shooting code
+what to add another varieble to enemy a value that is set to 1000 than each time the enemy is updated callcaue the time between the next shoot time -1000 to get the prevesu update time starting time then messure with current time by substracting the prevrious update time from current time give how many millsecond have passby since being created 
+two new variable per enemy prevurs time and count_downtime 
+only when updating the enemy need the time in millsecond between updates of updating the enemy preverus one to current_time -enemy_prevrous_time
+create two new variable's now time, one that gets rest to 1500 and it countdowns only when the enemy is active
+where as before it litrual just saving and starting the timer 1500 millseconds on it this for the shooting so it's only start ticking when active being updated in view of the player
+the only to do that  inside the enemy_update function  for each enemy decrement a value by the time between frames then check it's larger than 1500 millseconds
+}
+
+
+
+
+get chatgpt to code this should just be a drop in file, would need a list of god names and ids numbers for the spawn to create them
+would need show it some the engine for it to get idea of it 
+{
+just want a simper spawner with inner circle and outta circle 
+inner 3 and outta 4 circle values  can be use in the dist in grid_get_nearby 
+opengl units or pixel 12  18 is like one 1.0 until like a tile 8by8 or more don't know
+how to spawn only within the fixed circle use sin and cos from the center of the player and then a random distance between the two circles distance = outtacircle -innercircle
+random numebr between two values for a random distance 
+that way it's always within the circle from the player then just need to set angle probably only spawn in the direction the player heading like being inbtween two angles based of the direction vector of the player x and y -45 degress 
+
+need to update the grid and enemy to store states and restore them on command to keep enemy alive from going realm to nexus and back to realm
+problem one is there might be lots enemys and keeping auto nexusing so maybe remove or enemys near where the player spawns in the realm 
+that way with the maxium amount of spawn enemys allowed can just create into the limit and while player exspolres both result in creating enemys 
+
+also use the grid_get_nearby at the point of spawning the enemy to check distnace to close enemy see if its safe to spawn no over crowding or spwning on top fo each other 
+
+also some kind of timer to trigger spawning like every 2 seconds check to see enemy_list is large the maxium allowed amount
+
+
+only spawn gods 
+have a maxium amount of enemys allowed 
+
+
+just spawn them all over only update and draw enemy nearby to the player so there basic just exist in memory but in active in the game
+}
+
+
+
+
+just had to update the control open world.exw
+to only update and draw enemy nearby to the player set to 3 distance in the grid_get_nearby in draw and loop function 
+
+need a basic 
+
+simple list
+{
+add a keyboard key to toggle lighting on or off also for debug display text  done
+need todo still
+need spawning all enemy's on each terrian type or tile type for that particular enemy read from xml data
+i should have around 10 enemys to start with working include gods and beach prites 
+
+for the video 
+have spawner working with 10 enemys 
+show lighting, mountine 3 colour lights nearby startup of the game 
+show frost in world map
+show loot picking 
+show a few equiped weapons and projectiles 
+kill enemys
+and change maps from realm and nexus and back to show map loading 
+auto nexus and auto player health regen while in nexus restore player to prevsious postion when going back to the realm  
+show of the zoom in and out of map with z and x i think with lighting on and off
+
+}
+
+really need a spawner that creates a lot of enemys with differnt health and place towards centrer mounians god area weak close to the edge of the map 
+
+at least then i can show a video of some mob killing and increasingly difficulty
+maybe add in nexus to recover health, have auto nexus on percentage of health hard code in the game if in the realm world. need to create a few variables map_name and set it in the map_load function
+that way at any time we can check what map we are in also incresses health only in nexus also when returning to realm it would be better if the player returns to the same place before nexusing 
+keeping the enemys im the same place they where when beofre the player nexus just get a copy of enemy list, freelist data as well to full restore in the enemy class 
+
+Chatgpt convert above 
+{
+Main gameplay goal
+really need a spawner that creates a lot of enemies with different health and places them by difficulty
+weak enemies should be closer to the edge of the map
+stronger enemies should be closer to the centre mountain god area
+
+That would let you show proper mob killing in the video with increasing difficulty as the player moves inward
+
+Possible nexus system
+add nexus healing so the player recovers health while in nexus
+add auto nexus at a hardcoded health percentage, but only if the player is in the realm world
+create a variable like map_name and set it inside map_load so the game always knows which map is active
+then health regen can be limited to nexus only
+
+Better realm return system
+
+
+when the player returns from nexus to realm, put them back at the same place they were before nexusing
+
+{ this a bad idea cause better to get rid of enemys but not sure how that would work with spawner system that creates all the enemys on startup, cause when chagning map i delete the enemy list reset the grid a couple other things 
+
+keep the enemies in the same positions too  
+this likely means saving a copy of the enemy list and freelist data so the enemy class can fully restore the realm state
+}
+In short, your biggest priority sounds like this:
+first get the terrain-based spawner working, then add enough enemy variety and progression to make the world feel alive, then finish nexus restore and healing so the gameplay loop feels complete enough for a video.
+}
+
+
+
+write down what each key does
+
+keys
+
+A left
+D right
+W up
+S down
+
+space create gods
+1 world map load
+3 nexus map load 
+
+L light switch on and off 
+K debug draw text switch on and off 
+
+
+
+just had idea to look at the xml data to get a groups of list of enemys to spawn
+then have chatgpt genrate some code to make a spawner fill the world on startup to test the grid system for enemys and the get nearby list of enemys this way you could 1000s of enemys but only a few active at a time and it give the game some deep something to actually play 
+
+maybe use the tile xml data tile type like sand grass  or whatever method they use to difintrate between tiles in the main game engine open world.exw use the tile data from map loading to ideentify each type before spawping them 
+
+
+
+	<Object type="0x600" id="Pirate">
+		<Group>Pirates</Group>
+		<Enemy/>
+		<Class>Character</Class>
+		<AnimatedTexture><File>chars8x8rBeach</File><Index>1</Index></AnimatedTexture>
+		<HitSound>monster/pirates_hit</HitSound>
+		<DeathSound>monster/pirates_death</DeathSound>
+		<Size>100</Size>
+		<MaxHitPoints>5</MaxHitPoints>
+		<Defense>0</Defense>
+		<Terrain>ShoreSand</Terrain>
+
+		<Projectile id="0">
+			<ObjectId>Blade</ObjectId>
+			<Damage>4</Damage>
+			<Speed>40</Speed>
+			<LifetimeMS>600</LifetimeMS>
+		</Projectile>
+
+
+	</Object>
+	
+each enemy has a type and id and <Terrain> type ShoreSand the spanwer needs to know what ShoreSand is in terms of a tile so create a list of tiles assiged to ShoreSand this way the spawnner can check the map tile and if they are the same spawn spot found 
+
+read enemy terrain from XML, map that terrain name to real map tile types, scan the loaded map for matching tiles, store valid spawn positions, then create dormant enemy spawns there and only activate nearby ones.
+
+collision it's better to use enemy define radius then pixel perfect collision detection between enemy and player projectiles
+
+
+
+For player bullets: small wand shot = 0.08 arrow = 0.10 staff orb = 0.14 For enemy bullets: tiny pellet = 0.08 medium shot = 0.12 giant blob = 0.22
+
+public function circles_hit(atom x1, atom y1, atom r1, atom x2, atom y2, atom r2) 
+atom dx, dy, rr dx = x1 - x2 dy = y1 - y2 rr = r1 + r2 
+return dx*dx + dy*dy <= rr*rr 
+end function
+
+Add radius fields: enemy radius projectile radius player hit radius constant
+
+
+If the current time is still within the cooldown window, you ignore the hit. If not, you apply damage and set a new cooldown.
+
+Conceptually it behaves like this:
+
+the player gets hit
+a short timer starts (for example 0.15 seconds)
+during that time, all further hits are ignored
+after the timer expires, the player can be hit again
+
+
+It also improves clarity. You can pair i-frames with visual feedback like flashing, transparency, or a color tint. That tells the player “you are currently invulnerable,” which reduces confusion.
+
+How long should it be
+
+Short is better. Typically around 0.1 to 0.2 seconds.
+
+Too short and it does not solve the problem.
+Too long and the game becomes too forgiving and reduces difficulty.
+
+Around 0.15 seconds is a very good starting point.
+
+
+
+
+
+
+
+
+what you can see from all video of the game
+
+lighting 
+projectile lighting 
+enemy with wander flee and chase 
+enemy shooting
+enemy health bars
+lootbags
+gods enemys 
+player 
+player health bar 
+player stats dex and speed 
+player inventory euqiping items via drag and drop from inventory or lootbags
+world map
+nexus map
+tiles objects solid 
+
+
+
+testing auto nexus when player health drops below 100
+player health automatically regenerates  while in the nexus
+when player leaves the nexus into the realm world it position the player before it nexus going back to where you left off
+
+
+youtube descciption 
+
+
+Now have nearby enemy updating and drawing working through the grid system, which is a major performance improvement because only enemies within range of the player are active. Auto-nexus has been tested, health regeneration works in the Nexus, and returning to the realm restores the player to their previous world position. Lighting and debug text can both now be toggled with keyboard keys. The system has also been stress tested with 2000 random enemy spawns, and later adapted to spawn around 450 god enemies over the same area. A temporary invulnerability timer is also in place to stop the player from instantly taking damage from enemys again when returning to the realm.

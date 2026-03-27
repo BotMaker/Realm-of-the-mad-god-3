@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=2d sphere
+Name[en_US]=compile rotmg
+Exec=gnome-terminal -- bash -c 'wine exw /home/gareth/.wine/drive_c/EUPHORIA/source/bind.ex -w32 -full_debug "/home/gareth/Desktop/Rotmg-engine-2-main/open world.exw"; exec bash'
+Exec[en_US]=gnome-terminal -- bash -c "/euphoria/source/bind.ex -w32 -full_debug 'open world.exw'; exec bash"
+Comment=
+Comment[en_US]=
+Terminal=true
+PrefersNonDefaultGPU=false
+Icon=cinnamon-panel-launcher
+Icon[en_US]=cinnamon-panel-launcher
+Type=Application
+Type[en_US]=Application

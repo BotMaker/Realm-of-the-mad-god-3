@@ -1,0 +1,21 @@
+			 ret=enemy_new(camera_x, camera_y, 100.0, 0.1, 5,rand(220), #910) 
+
+	         ret=enemy_new(camera_x, camera_y, 100.0, 0.1, object_delta_mod(object_type_from_name("White Demon"),object_sprite), (object_delta_mod(object_type_from_name("White Demon"),object_indexx)*7), object_type_from_name("White Demon") )
+			 
+			 index=(object_delta_mod(object_type_from_name("Sprite God"),object_indexx)*7)
+			 ret=enemy_new(camera_x+2, camera_y, 100.0, 0.1, object_delta_mod(object_type_from_name("Sprite God"),object_sprite), index, object_type_from_name("Sprite God"))
+			 
+			 index=(object_delta_mod(object_type_from_name("Medusa"),object_indexx)*7)
+			 ret=enemy_new(camera_x+4, camera_y, 100.0, 0.1, object_delta_mod(object_type_from_name("Medusa"),object_sprite), index, object_type_from_name("Medusa"))
+			 
+			 index=(object_delta_mod(object_type_from_name("Ent God"),object_indexx)*7)
+			 ret=enemy_new(camera_x+6, camera_y, 100.0, 0.1, object_delta_mod(object_type_from_name("Ent God"),object_sprite), index, object_type_from_name("Ent God"))
+			 
+			 index=(object_delta_mod(object_type_from_name("Flying Brain"),object_indexx)*7)
+			 ret=enemy_new(camera_x+8, camera_y, 100.0, 0.1, object_delta_mod(object_type_from_name("Flying Brain"),object_sprite), index, object_type_from_name("Flying Brain"))
+			 
+			 index=(object_delta_mod(object_type_from_name("Ghost God"),object_indexx)*7)
+			 ret=enemy_new(camera_x+12, camera_y, 100.0, 0.1, object_delta_mod(object_type_from_name("Ghost God"),object_sprite), index, object_type_from_name("Ghost God"))
+			
+			 index=(object_delta_mod(object_type_from_name("Djinn"),object_indexx)*7)
+			 ret=enemy_new(camera_x+14, camera_y, 100.0, 0.1, object_delta_mod(object_type_from_name("Djinn"),object_sprite), index, object_type_from_name("Djinn"))

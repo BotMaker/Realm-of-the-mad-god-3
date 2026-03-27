@@ -1,0 +1,139 @@
+sequence class_list,class_freelist,projectile_freelist
+class_list={}
+class_freelist={}
+projectile_freelist={}
+
+global constant projectile_x = 1
+global constant projectile_y = 2
+global constant projectile_angle = 3
+global constant projectile_start_time = 4
+global constant projectile_bullet_id = 5
+global constant projectile_type = 6
+global constant projectile_light = 7
+
+global procedure projectile_init()
+class_list={}
+class_freelist={}
+projectile_freelist={}
+end procedure 
+
+ integer total_classes, total_projectiles, total_free
+ 
+ total_classes = length(class_list)
+    total_projectiles = 0
+    total_free = 0
+
+global procedure projectile_debug()
+    integer active
+    total_classes = length(class_list)
+    total_projectiles = 0
+    total_free = 0
+
+    for i = 1 to total_classes do
+        if length(class_list[i]) > 0 then
+            active = 0
+            for j = 1 to length(class_list[i]) do
+                if length(class_list[i][j]) > 0 then
+                    active += 1
+                end if
+            end for
+
+
+            total_projectiles += active
+            total_free += length(projectile_freelist[i])
+        end if
+    end for
+
+    
+
+end procedure
+
+global procedure projectile_debug_draw()
+    draw_text(0,240,"projectile_debug ")
+	draw_text(0,260,"TOTAL classes: "&sprint(total_classes))
+	draw_text(0,280,"Active projectiles: "&sprint(total_projectiles))
+	draw_text(0,300,"Free slots:  "&sprint(total_free))
+end procedure
+
+global function projectile_new()
+  integer handle
+  if length(class_freelist)>0 then
+    handle= class_freelist[1]
+    class_freelist = class_freelist[2..length(class_freelist)]
+  else
+    class_list= append(class_list,{})
+	projectile_freelist= append(projectile_freelist,{})
+    handle=length(class_list)
+  end if
+
+  class_list[handle]={}
+  projectile_freelist[handle]={}
+
+  return handle
+end function
+
+
+global function projectile_enter(
+    integer handle,
+    atom x, atom y,
+    atom angle, atom start_time,
+    integer bullet_id, integer ctype, integer light)
+
+    integer index
+
+    -- Reuse a freed slot if available
+    if length(projectile_freelist[handle]) > 0 then
+        index = projectile_freelist[handle][1]
+        projectile_freelist[handle] = projectile_freelist[handle][2..$]
+        class_list[handle][index] = {x, y, angle, start_time, bullet_id, ctype, light}
+        return index
+    else
+        -- Otherwise append a new projectile
+        class_list[handle] = append(class_list[handle], {x, y, angle, start_time, bullet_id, ctype, light})
+        return length(class_list[handle])
+    end if
+end function
+
+global function projectile_get_list(integer handle)
+  return class_list[handle]
+end function
+
+global function projectile_get_x(integer handle,integer index)
+  return class_list[handle][index][projectile_x]
+end function
+
+global function projectile_get_y(integer handle,integer index)
+  return class_list[handle][index][projectile_y]
+end function
+
+global procedure projectile_set_position(integer handle,integer index, atom x, atom y)
+  class_list[handle][index][projectile_x]=x
+  class_list[handle][index][projectile_y]=y
+end procedure
+
+
+--global procedure projectile_free(integer handle, integer index)
+--  class_list[handle][index]={}
+--  class_freelist =append(class_freelist, index)
+  --projectile_freelist[handle]&=index
+--end procedure
+
+integer freecount
+freecount=0
+
+global procedure projectile_free(integer handle, integer index)
+--puts(1,"free count :"&sprint(freecount)&"\n")
+--freecount+=1
+    -- Mark projectile slot as free
+    class_list[handle][index] = {}
+    
+    -- Add back to the projectile freelist for this class
+    projectile_freelist[handle] = append(projectile_freelist[handle], index)
+end procedure
+
+
+global procedure projectile_delete(integer handle)
+  class_list[handle]={}
+  projectile_freelist[handle]={}
+  class_freelist =append(class_freelist, handle)
+end procedure

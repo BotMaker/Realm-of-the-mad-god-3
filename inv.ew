@@ -1,0 +1,40 @@
+global integer selected
+selected=0
+
+global sequence inv_slot_buttons
+inv_slot_buttons={}
+
+global sequence inv
+  inv=repeat({-1,0},20)
+
+
+  --17, 11, 14, 9, wizzard
+  inv[1][1]=#C03
+  inv[1][2]=0 --slotype
+  inv[2][2]=11
+  inv[3][2]=14
+  inv[4][2]=9
+
+  inv[5][1]=#AFF
+
+
+  inv[6][1]=#C02
+  
+ 
+  inv[7][1]=#9C0
+  
+  
+
+  inv[8][1]=#9D3
+  
+
+  inv[9][1]=object_type_from_name("Dagger of Dire Hatred")
+
+  inv[10][1]=#C0A
+
+  inv[11][1]=object_type_from_name("Demon Blade")
+  
+  inv[12][1]=object_type_from_name("Bow of Covert Havens")
+
+  
+  inv[13][1]=#C03
