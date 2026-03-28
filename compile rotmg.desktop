@@ -1,3 +1,4 @@
+#!/usr/bin/env xdg-open
 [Desktop Entry]
 Name=2d sphere
 Name[en_US]=compile rotmg

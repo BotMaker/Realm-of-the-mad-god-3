@@ -103,6 +103,8 @@ include "equipxml.ew"
 include "xmlall.ew"
 include "projectilexml.ew"
 
+include terrain_enemy_data.ew
+
 
 
 
@@ -371,12 +373,35 @@ procedure init()
         spr=spritesheet_new(texture_load("data\\lofiProjs.bmp"),8,8)
         object_bitmaps=append(object_bitmaps,{"lofiProjs", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
         
-        
+       --all new spritesheets added 2026 march
        spr=spritesheet_new(texture_load("data\\chars8x8rBeach.bmp"),8,8)
        object_bitmaps=append(object_bitmaps,{"chars8x8rBeach", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
        
        spr=spritesheet_new(texture_load("data\\chars8x8dBeach.bmp"),8,8)
        object_bitmaps=append(object_bitmaps,{"chars8x8dBeach", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+       
+       spr=spritesheet_new(texture_load("data\\chars8x8rMid.bmp"),8,8)
+       object_bitmaps=append(object_bitmaps,{"chars8x8rMid", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+       
+       spr=spritesheet_new(texture_load("data\\chars8x8rMid2.bmp"),8,8)
+       object_bitmaps=append(object_bitmaps,{"chars8x8rMid2", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+       
+       spr=spritesheet_new(texture_load("data\\chars8x8rLow1.bmp"),8,8)
+       object_bitmaps=append(object_bitmaps,{"chars8x8rLow1", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+       
+       spr=spritesheet_new(texture_load("data\\chars8x8rLow2.bmp"),8,8)
+       object_bitmaps=append(object_bitmaps,{"chars8x8rLow2", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+       
+       spr=spritesheet_new(texture_load("data\\chars8x8dEncounters.bmp"),8,8)
+       object_bitmaps=append(object_bitmaps,{"chars8x8dEncounters", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+       
+       spr=spritesheet_new(texture_load("data\\chars8x8rHero1.bmp"),8,8)
+       object_bitmaps=append(object_bitmaps,{"chars8x8rHero1", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+       
+       spr=spritesheet_new(texture_load("data\\chars8x8rHero2.bmp"),8,8)
+       object_bitmaps=append(object_bitmaps,{"chars8x8rHero2", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+      
+       
        
 
         --new
@@ -689,9 +714,11 @@ enemy_dielist={}
             draw_spritesheet_floor_angle(x,y, 1, projectile_delta_mod(stype,projectile_sprite), projectile_delta_mod(stype,projectile_indexx),(-angle2-(90+45))+180 )
           end if
 		  
+		  
+          if lighting_switch = 1 then
 		  light_set_x(light,x)
           light_set_y(light,y)
-		  
+          end if
 		  nearby = grid_get_nearby(x, y, 1)
 		  
 	      if length(nearby) then
@@ -729,7 +756,9 @@ enemy_dielist={}
 				  end if
 
                 -- optional: mark projectile for deletion
-                light_delete(light)
+                if lighting_switch = 1 then
+                  light_delete(light)
+                end if
                 projectile_free(projectilelist, j)
 				exit
                end if
@@ -738,7 +767,9 @@ enemy_dielist={}
          end if	
           
           if walkable[floor(y)][floor(x)]=0  then
+                   if lighting_switch = 1 then
 		    light_delete(light)
+		    end if
             projectile_free(projectilelist,j)
             
           end if
@@ -1471,11 +1502,12 @@ sequence ppp
 atom frametime,deltatime ,brightness,last_brightness,dx,dy,dz
 integer index,sprite
 atom ex,ey,fx,fy
-sequence color
+sequence color,text_to_draw
 sequence nearby
 nearby={}
 camera_x=player_x+2
 camera_y=player_y+1
+text_to_draw={}
 
 last_brightness = -1
 
@@ -1568,6 +1600,7 @@ gl_color4f({1, 1,1, 1})
              ex = enemy_list[nearby[i][1]][ENEMY_X]
              ey = enemy_list[nearby[i][1]][ENEMY_Y]
              sprite = enemy_list[nearby[i][1]][ENEMY_SPRITE]
+             if sprite!=0 then
 			 if spritesheet_list[sprite][spritesheet_sprite_width]=8 then
 			 
 			   draw_spritesheet_floor(ex, ey, 1, sprite,enemy_list[nearby[i][1]][ ENEMY_FRAMEINDEX])
@@ -1575,16 +1608,18 @@ gl_color4f({1, 1,1, 1})
 			 
 			   draw_spritesheet_floor(ex, ey, 2, sprite,enemy_list[nearby[i][1]][ ENEMY_FRAMEINDEX])
 			 end if
+            else
+               -- need to be in opengl 2d mode to draw text
+               
+               text_to_draw=append(text_to_draw,{ex,ey,  object_delta(enemy_list[nearby[i][1]][ ENEMY_PROJECTILE ], object_file)  })
+               
+            end if
         end if
     end for
 	
 
 	
 	draw_enemy_health_bars()
-	
-	
-
-
 
 
 
@@ -1599,6 +1634,15 @@ gl_color4f({1, 1,1, 1})
 
   gui_draw_inv_slots2()
    draw_health()
+   
+   
+   currentfont=font0
+   draw_set_color(255,0,255)
+               
+   for i=1 to length(text_to_draw) do
+      --puts(1,text_to_draw[i][3]&"\n")
+      draw_text(text_to_draw[i][1]-camera_x,text_to_draw[i][2]-camera_y,text_to_draw[i][3]) 
+   end for
    
    
    
@@ -1946,16 +1990,12 @@ elsif rnd=8 then
 end if 
 end procedure
 
-constant enemy_type_list={
-"Pirate",
-"Piratess",
-"Snake",
-"Bandit Leader",
-"Bandit",
-"Red Gelatinous Cube",
-"Purple Gelatinous Cube",
-"Green Gelatinous Cube"
-}
+
+--TERRAIN_MOUNTAINS_ENEMIES & 
+
+constant  enemy_type_list=  TERRAIN_NONE_ENEMIES & TERRAIN_SHORESAND_ENEMIES & TERRAIN_SHOREPLAINS_ENEMIES & TERRAIN_MIDFOREST_ENEMIES & TERRAIN_MIDPLAINS_ENEMIES & TERRAIN_MIDSAND_ENEMIES & TERRAIN_MOUNTAINS_ENEMIES
+
+--constant  enemy_type_list=TERRAIN_NONE_ENEMIES
 
 
 procedure create_enemy_from_name(sequence name, atom x,atom y)
@@ -1969,12 +2009,22 @@ ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(object_type_from_name(name),obje
 
 end procedure
 
+procedure create_enemy_from_id(integer id, atom x,atom y)
+integer ret
+
+
+ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(id,object_sprite),(object_delta_mod(id,object_indexx)*7), id )
+
+end procedure
+
 
 procedure create_random_enemy_at_random_position()
 integer rnd,ret,index
 rnd=rand(length(enemy_type_list))
 
-create_enemy_from_name(enemy_type_list[rnd],rand(512)+512, rand(512)+512)
+--create_enemy_from_name(enemy_type_list[rnd],rand(512)+512, rand(512)+512)
+
+create_enemy_from_id(enemy_type_list[rnd],rand(512)+512, rand(512)+512)
 
 end procedure
 

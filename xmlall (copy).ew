@@ -178,26 +178,8 @@ function object_new()
 end function
 
 
-function projectile_new_old()
-  return {
-{"ObjectId",0},
-{"Speed",0},
-{"MinDamage",0},
-{"MaxDamage",0},
-{"LifetimeMS",0},
-{"Parametric",0},
-{"Amplitude",0},
-{"Frequency",0},
-{"Wavy",0},
-{"Boomerang",0},
-{"Size",0},
-{"Damage",0}
-  }
-end function
-
 function projectile_new()
   return {
-{"id",0},
 {"ObjectId",0},
 {"Speed",0},
 {"MinDamage",0},
@@ -234,7 +216,6 @@ function object_index(sequence name)
 end function
 
 
-global constant object_type=object_index("type")
 global constant object_speed=object_index("Speed")
 global constant object_lifetime=object_index("LifetimeMS")
 global constant object_numprojectiles=object_index("NumProjectiles")
@@ -283,8 +264,6 @@ global constant object_projectile_parametric=projectile_index("Parametric")
 global constant object_projectile_boomerang=projectile_index("Boomerang")
 global constant object_projectile_ObjectId=projectile_index("ObjectId")
 global constant object_projectile_size=projectile_index("Size")
-global constant object_projectile_id=projectile_index("id")
-global constant object_projectile_damage=projectile_index("Damage")
 
 
 
@@ -377,97 +356,117 @@ end procedure
 
 
 procedure process_objects(sequence name)
-    if tinyxml_load_file(doc, "all\\" & name) = 1 then
-        root = tinyxml_frist_child_element(doc, "Objects")
+  if tinyxml_load_file(doc,"all\\"&name)=1 then
+  root=tinyxml_frist_child_element(doc, "Objects")
+  
 
-        child = tinyxml_element_firstchild(root)
 
-        while child != 0 do
-            name1 = tinyxml_node_value(child)
+  att=tinyxml_frist_attribute(root)
+  if att then
+  	
+    --puts(1,tinyxml_attribute_name(att)&"  ")
 
-            if equal(name1, "Object") then
-                xml_list = append(xml_list, object_new())
-                index = length(xml_list)
-            end if
+    --puts(1,tinyxml_attribute_value(att)&"\n")
+  end if
 
-            -- object attributes: <Object type="..." id="...">
-            att = tinyxml_frist_attribute(child)
-            if att then
-                while att != 0 do
-                    attname = tinyxml_attribute_name(att)
+  child=tinyxml_element_firstchild(root)
 
-                    for i = 1 to length(xml_list[index]) - 1 do
-                        if equal(xml_list[index][i][1], attname) then
-                            xml_list[index][i][2] = tinyxml_attribute_value(att)
-                            exit
-                        end if
-                    end for
+  
 
-                    att = tinyxml_attribute_next(att)
-                end while
-            end if
+  while child!=0 do
 
-            nchild = tinyxml_node_firstchild(child)
-
-            while nchild != 0 do
-                name2 = tinyxml_node_value(nchild)
-
-                if equal(name2, "Projectile") then
-                    xml_list[index][object_projectile] = append(xml_list[index][object_projectile], projectile_new())
-                    projectile_id = length(xml_list[index][object_projectile])
-                end if
-
-                celement = tinyxml_node_toelement(nchild)
-
-                if celement != 0 then
-                    -- child element attributes
-                    -- for example: <Projectile id="0">
-                    att = tinyxml_frist_attribute(celement)
-
-                    if att then
-                        while att != 0 do
-                            attname = tinyxml_attribute_name(att)
-
-if equal(name2,"Projectile") then
-  for i=1 to length(xml_list[index][object_projectile][projectile_id]) do
-    if equal(xml_list[index][object_projectile][projectile_id][i][1],attname) then
-      xml_list[index][object_projectile][projectile_id][i][2]=tinyxml_attribute_value(att)
-      exit
+    name1=tinyxml_node_value(child)
+    if equal(name1,"Object") then
+      xml_list=append(xml_list, object_new() )
+      index=length(xml_list)
     end if
-  end for
-end if
+
+  	
+    att=tinyxml_frist_attribute(child)
+
+    if att then
+
+      while att!=0 do
+        attname=tinyxml_attribute_name(att)
+        for i=1 to length(xml_list[index])-1 do
+      	  if equal(xml_list[index][i][1],attname) then
+      	    xml_list[index][i][2]=tinyxml_attribute_value(att)
+            exit
+      	  end if
+        end for
+        att=tinyxml_attribute_next(att)
+        
+      end while
+
+    end if
 
 
+    nchild=tinyxml_node_firstchild(child)
+    	
+      while nchild!=0 do
+      	name2=tinyxml_node_value(nchild)
+      	
 
-                            att = tinyxml_attribute_next(att)
-                        end while
-                    end if
+      		if find("Projectile id",{name2,"gareth"}) then
+      	
+      	  puts(1,name2&"\n")
+        end if
+      
 
-                    -- direct text for normal child elements only
-                    -- example: <Size>135</Size>
-                    -- do not treat <Projectile> itself as a normal object field
-                    ret = tinyxml_element_gettext(celement)
+        if equal(name2,"Projectile") then
+        
+        
+          
+          xml_list[index][object_projectile]=append(xml_list[index][object_projectile],projectile_new())
+          projectile_id=length(xml_list[index][object_projectile])
+        end if
+      	
+        celement=tinyxml_node_toelement(nchild)
 
-                    if not equal(name2, "Projectile") then
-                        for i = 1 to length(xml_list[index]) - 1 do
-                            if equal(xml_list[index][i][1], name2) then
-                                xml_list[index][i][2] = ret
-                                exit
-                            end if
-                        end for
-                    end if
-                end if
+        if celement!=0 then
+        	
 
-                -- nested children like:
-                -- <Projectile><ObjectId>Red Fire</ObjectId>...</Projectile>
-                process_children(nchild)
+          att=tinyxml_frist_attribute(celement)
 
-                nchild = tinyxml_node_IterateChildren(child, nchild)
+          if att then
+
+            while att!=0 do
+              attname=tinyxml_attribute_name(att)
+              for i=1 to length(xml_list[index])-1 do
+      	        if equal(xml_list[index][i][1],attname) then
+      	         xml_list[index][i][2]=tinyxml_attribute_value(att)
+      		     exit
+      	       end if
+              end for
+              att=tinyxml_attribute_next(att)
+
             end while
+          end if
 
-            child = tinyxml_node_IterateChildren(root, child)
-        end while
-    end if
+        end if
+
+        if celement!=0 then
+          ret=tinyxml_element_gettext(celement)
+          if length(ret) then
+	      else
+          end if
+            for i=1 to length(xml_list[index])-1 do
+      	      if equal(xml_list[index][i][1],name2) then
+      	        xml_list[index][i][2]=ret
+      		    exit
+      	      end if
+            end for
+
+         
+        end if
+
+        process_children(nchild)
+
+        nchild=tinyxml_node_IterateChildren(child,nchild)
+      end while
+      child=tinyxml_node_IterateChildren(root,child)
+  end while	
+end if	
 end procedure
 
 
@@ -484,45 +483,15 @@ end for
 integer ind
 
 for j=1 to length(xml_list) do
-  ind = str_tol(xml_list[j][1][2])
-
-  if length(object_list[ind]) != 0 then
-    puts(1, "duplicate type detected\n")
-    puts(1, "new object type: " & xml_list[j][1][2] & "\n")
-    puts(1, "new object id: " & xml_list[j][2][2] & "\n")
-    puts(1, "existing object type: " & object_list[ind][1][2] & "\n")
-    puts(1, "existing object id: " & object_list[ind][2][2] & "\n")
+  ind=str_tol(xml_list[j][1][2])
+  if length(object_list[ind])!=0 then
+  	puts(1,"error occored\n")
   end if
 
-  object_list[ind] = xml_list[j]
+  object_list[ ind ]=xml_list[j]
+
+  --puts(1, sprint ( str_tol(xml_list[j][1][2]) ) &"\n")	
 end for
-
-
-
-for j=1 to length(xml_list) do
-    if length(xml_list[j][object_projectile]) > 1 then
-        --puts(1, xml_list[j][object_idd][2] & "\n")
-
-        for p=1 to length(xml_list[j][object_projectile]) do
-          --  puts(1, "  projectile " & sprint(p) & "\n")
-          --  puts(1, "    id: " & xml_list[j][object_projectile][p][object_projectile_id][2] & "\n")
-          --  puts(1, "    damage: " & xml_list[j][object_projectile][p][object_projectile_damage][2] & "\n")
-          --  puts(1, "    speed: " & xml_list[j][object_projectile][p][object_projectile_speed][2] & "\n")
-        end for
-
-        --puts(1, "\n")
-    end if
-end for
-
-for j=1 to length(xml_list) do
-    if atom(xml_list[j][object_idd][2]) or length(xml_list[j][object_idd][2])=0 then
-        puts(1, "BAD OBJECT ID\n")
-        ? xml_list[j][object_type]
-        ? xml_list[j][object_idd]
-    end if
-end for
-
-
 
 global function object_delta( integer index, integer id )
   
