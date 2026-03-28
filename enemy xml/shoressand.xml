@@ -1,0 +1,225 @@
+<enemies>
+
+  <enemy id="0x600" name="Pirate">
+    <behaviors>
+      <ifnot>
+        <chasing speed="8.5" range="6" acquireRange="0" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+
+      <cooldown time="2500">
+        <simpleattack range="3" />
+      </cooldown>
+    </behaviors>
+
+    <loot>
+      <lootdef min="0" max="2" threshold="0" bags="8">
+        <item chance="0.2" type="TierLoot" tier="1" itemType="Weapon" />
+        <item chance="0.03" type="HpPotionLoot" />
+      </lootdef>
+    </loot>
+  </enemy>
+
+  <enemy id="0x601" name="Piratess">
+    <behaviors>
+      <ifnot>
+        <once>
+          <spawnminionimmediate type="0x600" count="3" minRange="2" maxRange="5" />
+        </once>
+
+        <ifnot>
+          <chasing speed="11" range="6" acquireRange="1" target="null" />
+          <simplewandering speed="6" />
+        </ifnot>
+      </ifnot>
+
+      <cooldown time="2500">
+        <simpleattack range="3" />
+      </cooldown>
+
+      <rand>
+        <reproduce type="0x600" radius="5" />
+        <reproduce type="0x601" radius="5" />
+      </rand>
+    </behaviors>
+
+    <loot>
+      <lootdef min="0" max="2" threshold="0" bags="8">
+        <item chance="0.2" type="TierLoot" tier="1" itemType="Armor" />
+        <item chance="0.03" type="HpPotionLoot" />
+      </lootdef>
+    </loot>
+  </enemy>
+
+  <enemy id="0x602" name="Snake">
+    <behaviors>
+      <simplewandering speed="6" />
+
+      <cooldown time="2000">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+
+    <loot>
+      <lootdef min="0" max="2" threshold="0" bags="8">
+        <item chance="0.03" type="HpPotionLoot" />
+        <item chance="0.02" type="MpPotionLoot" />
+      </lootdef>
+    </loot>
+  </enemy>
+
+  <enemy id="0x604" name="Scorpion Queen">
+    <behaviors>
+      <ifnot>
+        <once>
+          <spawnminionimmediate type="0x603" count="3" minRange="5" maxRange="10" />
+        </once>
+
+        <smoothwandering speed="1" radius="3" />
+      </ifnot>
+
+      <reproduce type="0x603" radius="10" />
+    </behaviors>
+
+    <loot>
+      <lootdef min="0" max="2" threshold="0" bags="8">
+        <item chance="0.03" type="HpPotionLoot" />
+        <item chance="0.02" type="MpPotionLoot" />
+      </lootdef>
+    </loot>
+  </enemy>
+
+  <enemy id="0x603" name="Poison Scorpion">
+    <behaviors>
+      <ifnot>
+        <chasing speed="4" range="8" acquireRange="1" target="0x604" />
+        <simplewandering speed="4" />
+      </ifnot>
+
+      <cooldown time="2000">
+        <simpleattack range="8" />
+      </cooldown>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x953" name="Bandit Leader">
+    <behaviors>
+      <ifnot>
+        <once>
+          <spawnminionimmediate type="0x0954" count="2" minRange="3" maxRange="5" />
+        </once>
+
+        <ifnot>
+          <if>
+            <escaping speed="4" distance="5" hpThreshold="80" target="null" />
+            <true>
+              <once>
+                <simpletaunt text="Forget this... run for it!" />
+              </once>
+            </true>
+          </if>
+
+          <ifnot>
+            <chasing speed="4" range="6" acquireRange="1" target="null" />
+            <simplewandering speed="4" />
+          </ifnot>
+        </ifnot>
+      </ifnot>
+
+      <rand>
+        <cooldown time="1000">
+          <simpleattack range="8" />
+        </cooldown>
+
+        <if>
+          <cooldown time="2500">
+            <throwattack range="2" angle="5" damage="12" />
+          </cooldown>
+          <randomtaunt chance="0.1" text="Catch!" />
+        </if>
+      </rand>
+    </behaviors>
+
+    <loot>
+      <lootdef min="0" max="2" threshold="0" bags="8">
+        <item chance="0.2" type="TierLoot" tier="1" itemType="Weapon" />
+        <item chance="0.1" type="TierLoot" tier="2" itemType="Weapon" />
+        <item chance="0.2" type="TierLoot" tier="1" itemType="Armor" />
+        <item chance="0.03" type="HpPotionLoot" />
+        <item chance="0.02" type="MpPotionLoot" />
+      </lootdef>
+    </loot>
+  </enemy>
+
+  <enemy id="0x954" name="Bandit">
+    <behaviors>
+      <ifnot>
+        <ifnot>
+          <chasing speed="8" range="6" acquireRange="3" target="0x953" />
+          <chasing speed="8" range="6" acquireRange="0" target="null" />
+        </ifnot>
+
+        <simplewandering speed="4" />
+      </ifnot>
+
+      <cooldown time="2000">
+        <rand>
+          <simpleattack range="8" projectile="0" />
+          <simpleattack range="8" projectile="1" />
+        </rand>
+      </cooldown>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x60e" name="Red Gelatinous Cube">
+    <behaviors>
+      <simplewandering speed="4" />
+
+      <cooldown time="1000">
+        <multiattack range="5" arc="0.1745329252" count="2" />
+      </cooldown>
+    </behaviors>
+
+    <loot>
+      <lootdef min="0" max="2" threshold="0" bags="8">
+        <item chance="0.03" type="HpPotionLoot" />
+        <item chance="0.02" type="MpPotionLoot" />
+      </lootdef>
+    </loot>
+  </enemy>
+
+  <enemy id="0x60f" name="Purple Gelatinous Cube">
+    <behaviors>
+      <simplewandering speed="4" />
+
+      <cooldown time="600">
+        <simpleattack range="5" />
+      </cooldown>
+    </behaviors>
+
+    <loot>
+      <lootdef min="0" max="2" threshold="0" bags="8">
+        <item chance="0.03" type="HpPotionLoot" />
+        <item chance="0.02" type="MpPotionLoot" />
+      </lootdef>
+    </loot>
+  </enemy>
+
+  <enemy id="0x610" name="Green Gelatinous Cube">
+    <behaviors>
+      <simplewandering speed="4" />
+
+      <cooldown time="1800">
+        <ringattack range="5" count="5" />
+      </cooldown>
+    </behaviors>
+
+    <loot>
+      <lootdef min="0" max="2" threshold="0" bags="8">
+        <item chance="0.03" type="HpPotionLoot" />
+        <item chance="0.02" type="MpPotionLoot" />
+      </lootdef>
+    </loot>
+  </enemy>
+
+</enemies>

@@ -1,0 +1,515 @@
+<enemies>
+
+  <enemy id="0x651" name="White Demon">
+    <behaviors>
+      <ifnot>
+        <chasing speed="6" range="9" acquireRange="4" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="1000">
+        <predictivemultiattack range="10" arc="0.2617993878" count="3" lead="1" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Att" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+    <conditionalbehaviors>
+      <deathportal portal="0x071b" percent="20" />
+    </conditionalbehaviors>
+  </enemy>
+
+  <enemy id="0x652" name="Sprite God">
+    <behaviors>
+      <simplewandering speed="2" />
+      <runbehaviors>
+        <cooldown time="1000">
+          <multiattack range="12" arc="0.1745329252" count="4" />
+        </cooldown>
+        <cooldown time="1000">
+          <predictiveattack range="10" lead="1" projectileIndex="1" />
+        </cooldown>
+      </runbehaviors>
+      <ifnot>
+        <once>
+          <spawnminionimmediate type="0x653" count="2" minRange="3" maxRange="5" />
+        </once>
+        <reproduce type="0x653" radius="5" />
+      </ifnot>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Dex" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x653" name="Sprite Child">
+    <behaviors>
+      <ifnot>
+        <chasing speed="4" range="5" acquireRange="2" target="0x652" />
+        <simplewandering speed="4" />
+      </ifnot>
+    </behaviors>
+    <conditionalbehaviors>
+      <deathportal portal="0x070c" percent="20" />
+    </conditionalbehaviors>
+  </enemy>
+
+  <enemy id="0x654" name="Medusa">
+    <behaviors>
+      <ifnot>
+        <chasing speed="6" range="7" acquireRange="4" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="1000">
+          <multiattack range="12" arc="0.1745329252" count="5" />
+        </cooldown>
+        <cooldown time="3000">
+          <throwattack range="4" angle="8" damage="150" />
+        </cooldown>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Life" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x655" name="Ent God">
+    <behaviors>
+      <ifnot>
+        <chasing speed="10" range="7" acquireRange="4" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="1250">
+        <predictivemultiattack range="12" arc="0.1745329252" count="5" lead="1" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Mana" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x656" name="Beholder">
+    <behaviors>
+      <ifnot>
+        <chasing speed="4" range="7" acquireRange="4" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="750">
+          <predictiveringattack range="5" lead="0.5" count="12" projectileIndex="0" />
+        </cooldown>
+        <cooldown time="1000">
+          <predictiveattack range="10" lead="1" projectileIndex="1" />
+        </cooldown>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Def" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x657" name="Flying Brain">
+    <behaviors>
+      <ifnot>
+        <chasing speed="6" range="7" acquireRange="4" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="500">
+        <ringattack range="5" count="12" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Wis" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x658" name="Slime God">
+    <behaviors>
+      <ifnot>
+        <chasing speed="10" range="7" acquireRange="4" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="1000">
+          <predictivemultiattack range="12" arc="0.1745329252" count="5" lead="1" />
+        </cooldown>
+        <cooldown time="650">
+          <predictiveattack range="10" lead="1" projectileIndex="1" />
+        </cooldown>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Vit" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x659" name="Ghost God">
+    <behaviors>
+      <ifnot>
+        <chasing speed="4" range="7" acquireRange="4" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="900">
+        <multiattack range="12" arc="0.4363323130" count="7" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Spd" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+    <conditionalbehaviors>
+      <deathportal portal="0x071a" percent="20" />
+    </conditionalbehaviors>
+  </enemy>
+
+  <enemy id="0x0905" name="Rock Bot">
+    <behaviors>
+      <swirling speed="2" radius="5" />
+      <runbehaviors>
+        <cooldown time="1000">
+          <simpleattack range="15" />
+        </cooldown>
+        <cooldown time="1000">
+          <heal range="5" amount="2500" target="0x0907" />
+        </cooldown>
+        <randomtaunt chance="0.0001" text="We are impervious to non-mystic attacks." />
+      </runbehaviors>
+      <once>
+        <runbehaviors>
+          <spawnminionimmediate type="0x0906" count="2" minRange="1" maxRange="1" />
+          <spawnminionimmediate type="0x0907" count="2" minRange="1" maxRange="1" />
+        </runbehaviors>
+      </once>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.16" type="TierLoot" tier="5" itemType="Weapon" />
+          <item chance="0.16" type="TierLoot" tier="4" itemType="Armor" />
+          <item chance="0.08" type="TierLoot" tier="5" itemType="Armor" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="2" threshold="0" bags="8">
+            <item chance="0.08" type="TierLoot" tier="6" itemType="Weapon" />
+            <item chance="0.04" type="TierLoot" tier="7" itemType="Weapon" />
+            <item chance="0.04" type="TierLoot" tier="6" itemType="Armor" />
+            <item chance="0.05" type="TierLoot" tier="3" itemType="Ring" />
+          </lootdef>
+        </entry>
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.01" type="ItemLoot" item="Purple Drake Egg" />
+            <item chance="0.5" type="StatPotionLoot" stat="Att" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0906" name="Paper Bot">
+    <behaviors>
+      <ifnot>
+        <circling speed="4" radius="10" acquireRange="5" target="0x0905" />
+        <simplewandering speed="8" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="800">
+          <multiattack range="15" arc="0.3490658504" count="3" />
+        </cooldown>
+        <cooldown time="1000">
+          <heal range="5" amount="2500" target="0x0905" />
+        </cooldown>
+        <hplesser hp="400">
+          <runbehaviors>
+            <ringattack range="8" />
+            <despawn />
+          </runbehaviors>
+        </hplesser>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.04" type="HpPotionLoot" />
+          <item chance="0.01" type="MpPotionLoot" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="2" threshold="0" bags="8">
+            <item chance="0.01" type="TierLoot" tier="6" itemType="Weapon" />
+          </lootdef>
+        </entry>
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.01" type="ItemLoot" item="Tincture of Life" />
+            <item chance="0.5" type="StatPotionLoot" stat="Att" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0907" name="Steel Bot">
+    <behaviors>
+      <ifnot>
+        <circling speed="4" radius="10" acquireRange="5" target="0x0905" />
+        <simplewandering speed="8" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="800">
+          <multiattack range="15" arc="0.3490658504" count="3" />
+        </cooldown>
+        <cooldown time="1000">
+          <heal range="5" amount="2500" target="0x0906" />
+        </cooldown>
+        <randomtaunt chance="0.0001" text="Silly squishy, we heal our brothers in a circle." />
+        <hplesser hp="400">
+          <runbehaviors>
+            <ringattack range="8" />
+            <despawn />
+          </runbehaviors>
+        </hplesser>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.04" type="HpPotionLoot" />
+          <item chance="0.01" type="MpPotionLoot" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="2" threshold="0" bags="8">
+            <item chance="0.01" type="TierLoot" tier="6" itemType="Weapon" />
+          </lootdef>
+        </entry>
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Att" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x091a" name="Djinn">
+    <behaviors>
+      <hpgreaterequal hp="400">
+        <queuedbehavior>
+          <setconditioneffect effect="Invulnerable" />
+          <timed time="2500">
+            <false>
+              <chasing speed="6" range="7" acquireRange="0" target="null" />
+            </false>
+          </timed>
+          <unsetconditioneffect effect="Invulnerable" />
+          <if>
+            <isentitypresent range="10" target="null" />
+            <queuedbehavior>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.0" />
+                <ringattack range="4" offset="1.5707963268" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.1745329252" />
+                <ringattack range="4" offset="1.3962634016" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.3490658504" />
+                <ringattack range="4" offset="1.2217304764" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.5235987756" />
+                <ringattack range="4" offset="1.0471975512" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.6981317008" />
+                <ringattack range="4" offset="0.8726646260" />
+              </runbehaviors>
+              <cooldown time="250" />
+            </queuedbehavior>
+          </if>
+        </queuedbehavior>
+      </hpgreaterequal>
+    </behaviors>
+    <conditionalbehaviors>
+      <hplessercond hp="400">
+        <queuedbehavior>
+          <setconditioneffect effect="Invulnerable" />
+          <timed time="1000">
+            <flashing time="1500" color="0xffff0000" />
+          </timed>
+          <ringattack range="12" />
+          <die />
+        </queuedbehavior>
+      </hplessercond>
+    </conditionalbehaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Spd" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x6d8" name="Leviathan">
+    <behaviors>
+      <queuedbehavior>
+        <magiceye />
+        <timed time="2000">
+          <not>
+            <chasing speed="8" range="15" acquireRange="5" target="null" />
+          </not>
+        </timed>
+        <removekey>
+          <circling speed="5" radius="15" acquireRange="8" target="null" />
+        </removekey>
+        <timed time="2000">
+          <false>
+            <circling speed="5" radius="15" acquireRange="8" target="null" />
+          </false>
+        </timed>
+        <timed time="2000">
+          <not>
+            <tangential speed="8" />
+          </not>
+        </timed>
+      </queuedbehavior>
+
+      <queuedbehavior>
+        <timed time="1500">
+          <false>
+            <cooldown time="300">
+              <runbehaviors>
+                <multiattack range="15" arc="0.1745329252" count="3" offset="0.0" projectileIndex="0" />
+                <multiattack range="15" arc="0.1745329252" count="3" offset="2.0943951024" projectileIndex="0" />
+                <multiattack range="15" arc="0.1745329252" count="3" offset="4.1887902048" projectileIndex="0" />
+              </runbehaviors>
+            </cooldown>
+          </false>
+        </timed>
+
+        <timed time="1500">
+          <false>
+            <cooldown time="300">
+              <runbehaviors>
+                <multiattack range="15" arc="0.1745329252" count="4" offset="1.0471975512" projectileIndex="0" />
+                <multiattack range="15" arc="0.1745329252" count="4" offset="3.1415926536" projectileIndex="0" />
+                <multiattack range="15" arc="0.1745329252" count="4" offset="5.2359877560" projectileIndex="0" />
+              </runbehaviors>
+            </cooldown>
+          </false>
+        </timed>
+
+        <timed time="1500">
+          <false>
+            <cooldown time="300">
+              <predictivemultiattack range="15" arc="0.2617993878" count="2" lead="1" projectileIndex="1" />
+            </cooldown>
+          </false>
+        </timed>
+      </queuedbehavior>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Def" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x2004" name="Thunder God">
+    <behaviors>
+      <runbehaviors>
+        <simplewandering speed="3" />
+        <chasing speed="4" range="6" acquireRange="5" target="null" />
+        <queuedbehavior>
+          <cooldown time="2000">
+            <predictivemultiattack range="6" arc="0.3490658504" count="3" lead="0.4" projectileIndex="0" />
+          </cooldown>
+          <cooldown time="2000">
+            <multiattack range="6" arc="0.3490658504" count="3" />
+          </cooldown>
+        </queuedbehavior>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Att" />
+            <item chance="0.0025" type="ItemLoot" item="Scepter of Thunderclash" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+</enemies>

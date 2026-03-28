@@ -1,0 +1,641 @@
+include get.e
+
+global sequence enemy_behavior_list
+enemy_behavior_list = repeat({}, 65536)
+
+global constant NODE_TAG = 1
+global constant NODE_ATTRS = 2
+global constant NODE_CHILDREN = 3
+global constant NODE_TEXT = 4
+
+function enemy_behavior_new()
+    return {
+        {"id", 0},
+        {"name", 0},
+        {"behaviors", {}},
+        {"loot", {}}
+    }
+end function
+
+function enemy_behavior_index(sequence name)
+    sequence temp
+    temp = enemy_behavior_new()
+
+    for i = 1 to length(temp) do
+        if equal(temp[i][1], name) then
+            return i
+        end if
+    end for
+
+    return 0
+end function
+
+global constant enemyb_id = enemy_behavior_index("id")
+global constant enemyb_name = enemy_behavior_index("name")
+global constant enemyb_behaviors = enemy_behavior_index("behaviors")
+global constant enemyb_loot = enemy_behavior_index("loot")
+
+function hex_digit(integer ch)
+    if ch >= '0' and ch <= '9' then
+        return ch - '0'
+    end if
+    if ch >= 'a' and ch <= 'f' then
+        return ch - 'a' + 10
+    end if
+    if ch >= 'A' and ch <= 'F' then
+        return ch - 'A' + 10
+    end if
+    return -1
+end function
+
+function hex_text_to_int(sequence s)
+    integer starti, d
+    atom value
+
+    value = 0
+    starti = 1
+
+    if length(s) >= 2 then
+        if s[1] = '0' and (s[2] = 'x' or s[2] = 'X') then
+            starti = 3
+        end if
+    end if
+
+    for i = starti to length(s) do
+        d = hex_digit(s[i])
+        if d = -1 then
+            return -1
+        end if
+        value = value * 16 + d
+    end for
+
+    return floor(value)
+end function
+
+function node_attr_get(sequence attrs, sequence name)
+    for i = 1 to length(attrs) do
+        if equal(attrs[i][1], name) then
+            return attrs[i][2]
+        end if
+    end for
+    return 0
+end function
+
+
+function parse_xml_node(atom node)
+    atom celement, att, child
+    sequence tagname, attrs, children, text
+    sequence attname, attvalue, parsed_child
+    integer has_element_children
+
+    attrs = {}
+    children = {}
+    text = ""
+
+    tagname = tinyxml_node_value(node)
+    celement = tinyxml_node_toelement(node)
+
+    if celement != 0 then
+        att = tinyxml_frist_attribute(celement)
+        while att != 0 do
+            attname = tinyxml_attribute_name(att)
+            attvalue = tinyxml_attribute_value(att)
+            attrs = append(attrs, {attname, attvalue})
+            att = tinyxml_attribute_next(att)
+        end while
+    end if
+
+    has_element_children = 0
+    child = tinyxml_node_firstchild(node)
+    while child != 0 do
+        if tinyxml_node_toelement(child) != 0 then
+            has_element_children = 1
+            parsed_child = parse_xml_node(child)
+            children = append(children, parsed_child)
+        end if
+        child = tinyxml_node_IterateChildren(node, child)
+    end while
+
+    if celement != 0 and has_element_children = 0 then
+        text = tinyxml_element_gettext(celement)
+        if atom(text) then
+            text = ""
+        end if
+    else
+        text = ""
+    end if
+
+    return {tagname, attrs, children, text}
+end function
+
+function parse_xml_node_old0(atom node)
+    atom celement, att, child
+    sequence tagname, attrs, children, text
+    sequence attname, attvalue, parsed_child
+
+    attrs = {}
+    children = {}
+    text = ""
+
+    tagname = tinyxml_node_value(node)
+    celement = tinyxml_node_toelement(node)
+
+    if celement != 0 then
+        att = tinyxml_frist_attribute(celement)
+        while att != 0 do
+            attname = tinyxml_attribute_name(att)
+            attvalue = tinyxml_attribute_value(att)
+            attrs = append(attrs, {attname, attvalue})
+            att = tinyxml_attribute_next(att)
+        end while
+
+        text = tinyxml_element_gettext(celement)
+        if atom(text) then
+            text = ""
+        end if
+    end if
+
+    child = tinyxml_node_firstchild(node)
+    while child != 0 do
+        if tinyxml_node_toelement(child) != 0 then
+            parsed_child = parse_xml_node(child)
+            children = append(children, parsed_child)
+        end if
+        child = tinyxml_node_IterateChildren(node, child)
+    end while
+
+    return {tagname, attrs, children, text}
+end function
+
+global procedure enemy_behavior_load(sequence filename)
+    atom root, child, att, subnode
+    sequence rec
+    sequence id_text, name_text
+    integer obj_type
+
+
+    if tinyxml_load_file(doc, filename) != 1 then
+        puts(1, "failed to load enemy behavior file " & filename & "\n")
+        return
+    end if
+
+    root = tinyxml_frist_child_element(doc, "enemies")
+    if root = 0 then
+        puts(1, "no <enemies> root found in " & filename & "\n")
+        return
+    end if
+
+    child = tinyxml_element_firstchild(root)
+
+    while child != 0 do
+        if equal(tinyxml_node_value(child), "enemy") then
+            rec = enemy_behavior_new()
+
+            att = tinyxml_frist_attribute(child)
+            while att != 0 do
+                if equal(tinyxml_attribute_name(att), "id") then
+                    rec[enemyb_id][2] = tinyxml_attribute_value(att)
+                elsif equal(tinyxml_attribute_name(att), "name") then
+                    rec[enemyb_name][2] = tinyxml_attribute_value(att)
+                end if
+                att = tinyxml_attribute_next(att)
+            end while
+
+            obj_type = hex_text_to_int(rec[enemyb_id][2])
+
+            subnode = tinyxml_node_firstchild(child)
+            while subnode != 0 do
+                if tinyxml_node_toelement(subnode) != 0 then
+                    if equal(tinyxml_node_value(subnode), "behaviors") then
+                        rec[enemyb_behaviors][2] = parse_xml_node(subnode)
+                    elsif equal(tinyxml_node_value(subnode), "loot") then
+                        rec[enemyb_loot][2] = parse_xml_node(subnode)
+                    end if
+                end if
+                subnode = tinyxml_node_IterateChildren(child, subnode)
+            end while
+
+            if obj_type >= 1 and obj_type <= length(enemy_behavior_list) then
+                enemy_behavior_list[obj_type] = rec
+            else
+                puts(1, "invalid enemy id " & rec[enemyb_id][2] & " in " & filename & "\n")
+            end if
+        end if
+
+        child = tinyxml_node_IterateChildren(root, child)
+    end while
+end procedure
+
+global function enemy_behavior_get(integer obj_type)
+    if obj_type >= 1 and obj_type <= length(enemy_behavior_list) then
+        return enemy_behavior_list[obj_type]
+    end if
+    return {}
+end function
+
+global function enemy_behavior_exists(integer obj_type)
+    if obj_type >= 1 and obj_type <= length(enemy_behavior_list) then
+        return length(enemy_behavior_list[obj_type]) != 0
+    end if
+    return 0
+end function
+
+global function enemy_behavior_get_root(integer obj_type)
+    sequence rec
+    rec = enemy_behavior_get(obj_type)
+    if length(rec) then
+        return rec[enemyb_behaviors][2]
+    end if
+    return {}
+end function
+
+global function enemy_loot_get_root(integer obj_type)
+    sequence rec
+    rec = enemy_behavior_get(obj_type)
+    if length(rec) then
+        return rec[enemyb_loot][2]
+    end if
+    return {}
+end function
+
+global function behavior_node_tag(sequence node)
+    if length(node) >= NODE_TAG then
+        return node[NODE_TAG]
+    end if
+    return ""
+end function
+
+global function behavior_node_attrs(sequence node)
+    if length(node) >= NODE_ATTRS then
+        return node[NODE_ATTRS]
+    end if
+    return {}
+end function
+
+global function behavior_node_children(sequence node)
+    if length(node) >= NODE_CHILDREN then
+        return node[NODE_CHILDREN]
+    end if
+    return {}
+end function
+
+global function behavior_node_text(sequence node)
+    if length(node) >= NODE_TEXT then
+        return node[NODE_TEXT]
+    end if
+    return ""
+end function
+
+global function behavior_attr(sequence node, sequence name)
+    return node_attr_get(behavior_node_attrs(node), name)
+end function
+
+global function safe_s(sequence s)
+    if atom(s) then
+        return "<ATOM>"
+    end if
+    return s
+end function
+
+global procedure debug_print_behavior_node(sequence node, integer depth)
+    sequence pad, tagname, attrs, children, txt
+
+    pad = repeat(' ', depth * 2)
+    tagname = safe_s(behavior_node_tag(node))
+    attrs = behavior_node_attrs(node)
+    children = behavior_node_children(node)
+    txt = safe_s(behavior_node_text(node))
+
+    puts(1, pad & "<" & tagname)
+
+    for i = 1 to length(attrs) do
+        puts(1, " " & safe_s(attrs[i][1]) & "=\"" & safe_s(attrs[i][2]) & "\"")
+    end for
+
+    if length(children) = 0 and length(txt) = 0 then
+        puts(1, " />\n")
+        return
+    end if
+
+    puts(1, ">\n")
+
+    if length(txt) > 0 then
+        puts(1, pad & "  TEXT=[" & txt & "]\n")
+    end if
+
+    for i = 1 to length(children) do
+        if sequence(children[i]) then
+            debug_print_behavior_node(children[i], depth + 1)
+        else
+            puts(1, pad & "  <BAD_CHILD />\n")
+        end if
+    end for
+
+    puts(1, pad & "</" & tagname & ">\n")
+end procedure
+
+
+global procedure debug_enemy_tags(sequence filename)
+    atom root, child, att
+    sequence idd, name
+
+    if tinyxml_load_file(doc, filename) != 1 then
+        puts(1, "failed to load " & filename & "\n")
+        return
+    end if
+
+    root = tinyxml_frist_child_element(doc, "enemies")
+    if root = 0 then
+        puts(1, "no enemies root\n")
+        return
+    end if
+
+    child = tinyxml_element_firstchild(root)
+
+    while child != 0 do
+        if equal(tinyxml_node_value(child), "enemy") then
+            idd = ""
+            name = ""
+
+            att = tinyxml_frist_attribute(child)
+            while att != 0 do
+                if equal(tinyxml_attribute_name(att), "id") then
+                    idd = tinyxml_attribute_value(att)
+                elsif equal(tinyxml_attribute_name(att), "name") then
+                    name = tinyxml_attribute_value(att)
+                end if
+                att = tinyxml_attribute_next(att)
+            end while
+
+            puts(1, "enemy tag found id=" & idd & " name=" & name & "\n")
+        end if
+
+        child = tinyxml_node_IterateChildren(root, child)
+    end while
+end procedure
+
+
+global procedure debug_all_behavior2()
+sequence root
+for i=1 to length(enemy_behavior_list) do
+  if length(enemy_behavior_list[i]) then
+  
+    root=enemy_behavior_get_root(i)
+    if length(root) then
+      debug_print_behavior_node(root, 0)
+    end if
+  end if
+end for
+
+end procedure 
+
+
+global procedure debug_node_shape(sequence node, integer depth)
+    sequence pad, tagname, attrs, children, txt
+
+    pad = repeat(' ', depth * 2)
+
+    if not sequence(node) then
+        puts(1, pad & "NODE IS NOT A SEQUENCE\n")
+        return
+    end if
+
+    puts(1, pad & "length(node)=" & sprint(length(node)) & "\n")
+
+    if length(node) < 4 then
+        puts(1, pad & "BAD NODE: expected 4 fields\n")
+        puts(1, pad & sprint(node) & "\n")
+        return
+    end if
+
+    tagname = node[1]
+    attrs = node[2]
+    children = node[3]
+    txt = node[4]
+
+    puts(1, pad & "tag=" & sprint(tagname) & "\n")
+    puts(1, pad & "attrs_len=" & sprint(length(attrs)) & "\n")
+    puts(1, pad & "children_len=" & sprint(length(children)) & "\n")
+    puts(1, pad & "text=" & sprint(txt) & "\n")
+
+    for i = 1 to length(children) do
+        puts(1, pad & "child " & sprint(i) & ":\n")
+        debug_node_shape(children[i], depth + 1)
+    end for
+end procedure
+
+
+
+procedure fputs(integer fh, sequence s)
+    puts(fh, s)
+end procedure
+
+global procedure debug_print_behavior_node_file(integer fh, sequence node, integer depth)
+    sequence pad, tagname, attrs, children, txt
+
+    pad = repeat(' ', depth * 2)
+    tagname = behavior_node_tag(node)
+    attrs = behavior_node_attrs(node)
+    children = behavior_node_children(node)
+    txt = behavior_node_text(node)
+
+    fputs(fh, pad & "<" & tagname)
+
+    for i = 1 to length(attrs) do
+        fputs(fh, " " & attrs[i][1] & "=\"" & attrs[i][2] & "\"")
+    end for
+
+    if length(children) = 0 and length(txt) = 0 then
+        fputs(fh, " />\n")
+        return
+    end if
+
+    fputs(fh, ">\n")
+
+    if length(txt) > 0 then
+        fputs(fh, pad & "  " & txt & "\n")
+    end if
+
+    for i = 1 to length(children) do
+        debug_print_behavior_node_file(fh, children[i], depth + 1)
+    end for
+
+    fputs(fh, pad & "</" & tagname & ">\n")
+end procedure
+
+
+global procedure debug_leviathan_to_file()
+    integer fn
+    sequence rec, root
+
+    fn = open("leviathan_dump.txt", "w")
+    if fn = -1 then
+        puts(1, "failed to open file\n")
+        return
+    end if
+
+    for i = 1 to length(enemy_behavior_list) do
+        if length(enemy_behavior_list[i]) then
+            rec = enemy_behavior_get(i)
+            if equal(rec[enemyb_name][2], "Leviathan") then
+                root = enemy_behavior_get_root(i)
+                debug_print_behavior_node_file(fn, root, 0)
+                exit
+            end if
+        end if
+    end for
+
+    close(fn)
+end procedure
+
+
+
+
+
+global procedure dump_behavior_node(integer fh, sequence node, integer depth)
+    sequence pad, tagname, attrs, children, txt
+
+    pad = repeat(' ', depth * 2)
+
+    -- direct indexing (safer than accessors)
+    tagname = node[1]
+    attrs = node[2]
+    children = node[3]
+    txt = node[4]
+
+    fputs(fh, pad & "<" & tagname)
+
+    for i = 1 to length(attrs) do
+        fputs(fh, " " & attrs[i][1] & "=\"" & attrs[i][2] & "\"")
+    end for
+
+    if length(children) = 0 and length(txt) = 0 then
+        fputs(fh, " />\n")
+        return
+    end if
+
+    fputs(fh, ">\n")
+
+    if length(txt) > 0 then
+        fputs(fh, pad & "  " & txt & "\n")
+    end if
+
+    for i = 1 to length(children) do
+        dump_behavior_node(fh, children[i], depth + 1)
+    end for
+
+    fputs(fh, pad & "</" & tagname & ">\n")
+end procedure
+
+
+global procedure dump_all_behaviors_to_file(sequence filename)
+    integer fh
+    sequence rec, root
+
+    fh = open(filename, "w")
+    if fh = -1 then
+        puts(1, "ERROR: could not open file\n")
+        return
+    end if
+
+    for i = 1 to length(enemy_behavior_list) do
+        if length(enemy_behavior_list[i]) then
+
+            rec = enemy_behavior_get(i)
+
+            fputs(fh, "\n=== type=" & sprint(i) &
+                        " id=" & rec[enemyb_id][2] &
+                        " name=" & rec[enemyb_name][2] & " ===\n")
+
+            root = enemy_behavior_get_root(i)
+
+            if length(root) then
+                dump_behavior_node(fh, root, 0)
+            else
+                fputs(fh, "no behaviors\n")
+            end if
+        end if
+    end for
+
+    close(fh)
+
+    puts(1, "Dump complete: " & filename & "\n")
+end procedure
+
+
+
+
+global procedure debug_all_behavior()
+    sequence root, rec
+
+    for i = 1 to length(enemy_behavior_list) do
+        if length(enemy_behavior_list[i]) then
+            rec = enemy_behavior_get(i)
+            puts(1, "\n=== type=" & sprint(i) & " id=" & rec[enemyb_id][2] & " name=" & rec[enemyb_name][2] & " ===\n")
+
+            root = enemy_behavior_get_root(i)
+            if length(root) then
+                debug_print_behavior_node(root, 0)
+            else
+                puts(1, "no behaviors\n")
+            end if
+        end if
+    end for
+end procedure
+
+global procedure debug_leviathan_raw()
+    sequence rec, root, children
+
+    for i = 1 to length(enemy_behavior_list) do
+        if length(enemy_behavior_list[i]) then
+            rec = enemy_behavior_get(i)
+            if equal(rec[enemyb_name][2], "Leviathan") then
+                root = enemy_behavior_get_root(i)
+                children = behavior_node_children(root)
+
+                puts(1, "\nLEV ROOT CHILD COUNT=" & sprint(length(children)) & "\n")
+                puts(1, sprint(root) & "\n")
+                exit
+            end if
+        end if
+    end for
+end procedure
+
+
+
+global function find_child_by_tag(sequence node, sequence tag)
+    sequence children
+    children = behavior_node_children(node)
+
+    for i = 1 to length(children) do
+        if equal(behavior_node_tag(children[i]), tag) then
+            return children[i]
+        end if
+    end for
+
+    return {}
+end function
+
+global function find_node_recursive(sequence node, sequence tag)
+    sequence children, result
+
+    if equal(behavior_node_tag(node), tag) then
+        return node
+    end if
+
+    children = behavior_node_children(node)
+
+    for i = 1 to length(children) do
+        result = find_node_recursive(children[i], tag)
+        if length(result) then
+            return result
+        end if
+    end for
+
+    return {}
+end function
+
+
+
+
+

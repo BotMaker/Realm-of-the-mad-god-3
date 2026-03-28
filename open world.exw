@@ -105,7 +105,32 @@ include "projectilexml.ew"
 
 include terrain_enemy_data.ew
 
+include enemybehaviorxml.ew
 
+enemy_behavior_load("enemy xml\\shoressand.xml")
+enemy_behavior_load("enemy xml\\mountain.xml")
+
+
+--dump_all_behaviors_to_file("temp.txt")
+--debug_leviathan_to_file()
+
+
+
+
+--sequence  chasing_node
+
+--root = enemy_behavior_get_root(#600)
+
+--if length(root) then
+
+--    chasing_node = find_node_recursive(root, "chasing")
+
+--    if length(chasing_node) then
+--        puts(1, "speed = " & behavior_attr(chasing_node, "speed") & "\n")
+--        puts(1, "range = " & behavior_attr(chasing_node, "range") & "\n")
+--    end if
+
+--end if
 
 
 
@@ -1826,7 +1851,7 @@ grid_saved_state()
   end if
   
   if player_health<=max_health and equal(map_name,"nexus.wmap")=1 then
-    player_health+=1
+    player_health+=2
   end if 
  
   shooting=0
