@@ -267,6 +267,7 @@ global constant object_sprite=object_index("Sprite")
 global constant object_size=object_index("Size")
 
 global constant object_animated=object_index("AnimatedTexture")
+global constant object_texture=object_index("Texture")
 
 global constant object_terrain=object_index("Terrain")
 
@@ -613,7 +614,7 @@ global function object_type_from_name(sequence name)
     end if
   end for
   if length(name)>0 then
-  puts(1,"not found "&name&"\n")
+    puts(1,"not found "&name&"\n")
   end if
   return -1
 end function

@@ -1,0 +1,328 @@
+
+
+
+currenlty all Djinns does is chase and wonder and at a set interval i am wondering why that is
+
+Behavior
+
+Djinns have several phases, detailed below:
+
+    Chase Phase
+        During this phase, a Djinn will move towards a nearby player while flashing green and becoming Mithril Shield Invulnerable.
+    Attack Phase
+        During this phase, a Djinn will stop moving, and attack with an omnidirectional oscillating barrage of white bullets for a few seconds. During this time, it will be vulnerable.
+        If it does not reach low enough health to self-destruct by the end of this phase, it will return to its chase phase and repeat.
+        If an invisible player is nearby, the djinn will immediately enter and switch extremely quickly between this and its chase phase (switches every 0.1s).
+    Self-destruct
+        When a Djinn takes a significant amount of damage (500), it will become Mithril Shield Invulnerable and flash red for a second before shooting out one last ring of White Bullets and dying.
+
+
+
+<Object type="0x091a" id="Djinn">
+      <Group>Gods</Group>
+      <Enemy/>
+      <Class>Character</Class>
+      <AnimatedTexture>
+         <File>chars16x16dMountains1</File>
+         <Index>0x03</Index>
+      </AnimatedTexture>
+      <HitSound>monster/djinn_hit</HitSound>
+      <DeathSound>monster/djinn_death</DeathSound>
+      <Size>100</Size>
+      <MaxHitPoints>1000</MaxHitPoints>
+      <Defense>12</Defense>
+      <Terrain>Mountains</Terrain>
+      <Spawn>
+         <Mean>3</Mean>
+         <StdDev>1</StdDev>
+         <Min>2</Min>
+         <Max>5</Max>
+      </Spawn>
+      <Flying/>
+      <God/>
+      <SpawnProb>0.75</SpawnProb>
+      <Projectile>
+         <ObjectId>White Bullet</ObjectId>
+         <Damage>60</Damage>
+         <Speed>60</Speed>
+         <Size>60</Size>
+         <LifetimeMS>1500</LifetimeMS>
+         <MultiHit/>
+      </Projectile>
+      <DisplayId>{mountains.Djinn}</DisplayId>
+   </Object>
+   
+   
+   
+   
+   
+   
+     <enemy id="0x091a" name="Djinn">
+    <behaviors>
+      <ifnot>
+        <chasing speed="6" range="7" acquireRange="4" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <hpgreaterequal hp="400">
+        <queuedbehavior>
+          
+          <setconditioneffect effect="Invulnerable" />
+          <timed time="2500">
+            <false>
+              <chasing speed="6" range="7" acquireRange="0" target="null" />
+            </false>
+          </timed>
+          <unsetconditioneffect effect="Invulnerable" />
+
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.0" />
+                <ringattack range="4" offset="1.5707963268" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.1745329252" />
+                <ringattack range="4" offset="1.3962634016" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.3490658504" />
+                <ringattack range="4" offset="1.2217304764" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.5235987756" />
+                <ringattack range="4" offset="1.0471975512" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.6981317008" />
+                <ringattack range="4" offset="0.8726646260" />
+              </runbehaviors>
+              <cooldown time="250" />
+            </queuedbehavior>
+
+      </hpgreaterequal>
+    </behaviors>
+    <conditionalbehaviors>
+      <hplessercond hp="400">
+        <queuedbehavior>
+          <setconditioneffect effect="Invulnerable" />
+          <timed time="1000">
+            <flashing time="1500" color="0xffff0000" />
+          </timed>
+          <ringattack range="12" />
+          <die />
+        </queuedbehavior>
+      </hplessercond>
+    </conditionalbehaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Spd" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+  
+  
+  
+  
+  
+  
+  
+  
+    global function enemy_eval_behavior_node(integer handle, sequence node, sequence path)
+    sequence tag, children
+    atom now_time, delay, range, arc, lead, speed, offset
+    integer count, projectile_index
+    sequence s
+    object target
+
+    sequence child_path
+    integer did_any
+
+    if atom(node) then
+        return 0
+    end if
+
+    if length(node) = 0 then
+        return 0
+    end if
+
+    tag = behavior_node_tag(node)
+    now_time = current_time()
+    children = behavior_node_children(node)
+    did_any = 0
+    
+    projectile_index=-1
+    
+
+
+    --------------------------------------------------
+    -- CONTAINER NODES
+    --------------------------------------------------
+
+    if equal(tag, "behaviors") or equal(tag, "runbehaviors") then
+        for i = 1 to length(children) do
+            child_path = path & "." & sprint(i)
+            if enemy_eval_behavior_node(handle, children[i], child_path) then
+                did_any = 1
+            end if
+        end for
+        return did_any
+    end if
+
+    --------------------------------------------------
+    -- COOLDOWN
+    --------------------------------------------------
+
+    if equal(tag, "cooldown") then
+        delay = behavior_attr_number(node, "time", 0)
+
+        if now_time >= enemy_runtime_get_cooldown(handle, path) then
+            enemy_runtime_set_cooldown(handle, path, now_time + delay)
+
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) then
+                    did_any = 1
+                end if
+            end for
+
+            return did_any
+        end if
+
+        return 0
+    end if
+
+    --------------------------------------------------
+    -- ONCE
+    --------------------------------------------------
+
+    if equal(tag, "once") then
+        if enemy_runtime_get_once(handle, path) = 0 then
+            enemy_runtime_set_once(handle, path, 1)
+
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) then
+                    did_any = 1
+                end if
+            end for
+
+            return did_any
+        end if
+
+        return 0
+    end if
+
+    --------------------------------------------------
+    -- IFNOT (fallback logic)
+    --------------------------------------------------
+
+    if equal(tag, "ifnot") then
+        if length(children) >= 1 then
+            if enemy_eval_behavior_node(handle, children[1], path & ".1") = 0 then
+                if length(children) >= 2 then
+                    return enemy_eval_behavior_node(handle, children[2], path & ".2")
+                end if
+                return 0
+            else
+                return 1
+            end if
+        end if
+        return 0
+    end if
+
+    --------------------------------------------------
+    -- ACTION NODES
+    --------------------------------------------------
+
+    if equal(tag, "simplewandering") then
+        speed = behavior_attr_number(node, "speed", enemy_list[handle][ENEMY_SPEED])
+        return enemy_behavior_simplewandering(handle, speed)
+    end if
+
+    if equal(tag, "chasing") then
+        speed = behavior_attr_number(node, "speed", enemy_list[handle][ENEMY_SPEED])
+        range = behavior_attr_number(node, "range", 8)
+        target = behavior_attr(node, "target")
+        return enemy_behavior_chasing(handle, speed, range, range, target)
+    end if
+    
+    
+    
+     
+    if equal(tag, "ringattack") then
+        range = behavior_attr_number(node, "range", 8)
+        count = behavior_attr_int(node, "count", 1)
+        
+
+        return  enemy_behavior_ringattack(handle, count, 0, 1)
+    end if
+    
+    if equal(tag, "simpleattack") then
+        range = behavior_attr_number(node, "range", 8)
+
+
+        return enemy_behavior_multiattack(handle, range, 0, 1, 0, 1)
+    end if
+
+    if equal(tag, "multiattack") then
+        range = behavior_attr_number(node, "range", 8)
+        arc = behavior_attr_number(node, "arc", 0)
+        count = behavior_attr_int(node, "count", 1)
+        offset = behavior_attr_number(node, "offset", 0)
+        projectile_index = behavior_attr_int(node, "projectileIndex", -1)
+        
+
+        return enemy_behavior_multiattack(handle, range, arc, count, offset, projectile_index)
+    end if
+
+    if equal(tag, "predictiveattack") then
+        range = behavior_attr_number(node, "range", 8)
+        lead = behavior_attr_number(node, "lead", 1)
+        projectile_index = behavior_attr_int(node, "projectileIndex", -1)
+        
+
+        return enemy_behavior_predictiveattack(handle, range, lead, projectile_index)
+    end if
+    
+    
+
+    if equal(tag, "predictivemultiattack") then
+        range = behavior_attr_number(node, "range", 8)
+        arc = behavior_attr_number(node, "arc", 0)
+        count = behavior_attr_int(node, "count", 1)
+        lead = behavior_attr_number(node, "lead", 1)
+        projectile_index = behavior_attr_int(node, "projectileIndex", -1)
+        
+
+        
+        
+        return enemy_behavior_predictivemultiattack(handle, range, arc, count, lead, projectile_index)
+    end if
+    
+
+
+    if equal(tag, "state") then
+        s = behavior_attr_string(node, "name", "")
+        if equal(s, enemy_list[handle][ENEMY_XML_STATE]) then
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) then
+                    did_any = 1
+                end if
+            end for
+            return did_any
+        end if
+        return 0
+    end if
+
+    return 0
+end function
+  

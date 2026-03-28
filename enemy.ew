@@ -1,50 +1,267 @@
 include projectile_enemy.ew
+include get.e
 
 
 
+-----------------------------------------------------
 -- Global data
---global sequence enemy_list
+-----------------------------------------------------
 sequence class_freelist, enemy_freelist
 global integer projectile_enemy_list
+--global sequence enemy_list
+
 enemy_list = {}
 class_freelist = {}
 enemy_freelist = {}
 projectile_enemy_list = projectile_enemy_new()
 
-global procedure enemy_init()
-  enemy_list = {}
-  class_freelist = {}
-  enemy_freelist = {}
-  
+sequence enemy_state
+enemy_state = {}
+
+-----------------------------------------------------
+-- Debug counters
+-----------------------------------------------------
+integer active, free_count, total
+active = 0
+total = 0
+free_count = 0
+
+-----------------------------------------------------
+-- Hardcoded behavior constants
+-----------------------------------------------------
+constant WANDER_RADIUS = 50.0
+constant WANDER_LIMIT  = 100.0
+constant CHASE_RANGE   = 10.0
+constant FLEE_RANGE    = 50.0
+constant FLEE_THRESHOLD = 50.0
+
+-----------------------------------------------------
+-- Bullet id
+-----------------------------------------------------
+integer bullet_id
+bullet_id = 0
+
+-----------------------------------------------------
+-- Utility helpers
+-----------------------------------------------------
+global function to_number(sequence s)
+    object ret
+
+    ret = value(s)
+    if sequence(ret) then
+        if length(ret) >= 2 then
+            if ret[1] = GET_SUCCESS then
+                return ret[2]
+            end if
+        end if
+    end if
+
+    return 0
+end function
+
+global function runtime_find_pair(sequence pairs, sequence key)
+    for i = 1 to length(pairs) do
+        if equal(pairs[i][1], key) then
+            return i
+        end if
+    end for
+    return 0
+end function
+
+global function enemy_runtime_get_cooldown(integer handle, sequence key)
+    integer idx
+    sequence tbl
+
+    tbl = enemy_list[handle][ENEMY_XML_COOLDOWNS]
+    idx = runtime_find_pair(tbl, key)
+
+    if idx = 0 then
+        return 0
+    end if
+
+    return tbl[idx][2]
+end function
+
+global procedure enemy_runtime_set_cooldown(integer handle, sequence key, atom t)
+    integer idx
+    sequence tbl
+
+    tbl = enemy_list[handle][ENEMY_XML_COOLDOWNS]
+    idx = runtime_find_pair(tbl, key)
+
+    if idx = 0 then
+        tbl = append(tbl, {key, t})
+    else
+        tbl[idx][2] = t
+    end if
+
+    enemy_list[handle][ENEMY_XML_COOLDOWNS] = tbl
 end procedure
 
-sequence enemy_state
-enemy_state={}
+global function enemy_runtime_get_once(integer handle, sequence key)
+    integer idx
+    sequence tbl
+
+    tbl = enemy_list[handle][ENEMY_XML_ONCE]
+    idx = runtime_find_pair(tbl, key)
+
+    if idx = 0 then
+        return 0
+    end if
+
+    return tbl[idx][2]
+end function
+
+global procedure enemy_runtime_set_once(integer handle, sequence key, integer v)
+    integer idx
+    sequence tbl
+
+    tbl = enemy_list[handle][ENEMY_XML_ONCE]
+    idx = runtime_find_pair(tbl, key)
+
+    if idx = 0 then
+        tbl = append(tbl, {key, v})
+    else
+        tbl[idx][2] = v
+    end if
+
+    enemy_list[handle][ENEMY_XML_ONCE] = tbl
+end procedure
+
+
+global function enemy_runtime_get_value_from_once(integer handle, sequence key, atom default_value)
+    integer idx
+    sequence tbl
+
+    tbl = enemy_list[handle][ENEMY_XML_ONCE]
+    idx = runtime_find_pair(tbl, key)
+
+    if idx = 0 then
+        return default_value
+    end if
+
+    return tbl[idx][2]
+end function
+
+global procedure enemy_runtime_set_value_in_once(integer handle, sequence key, atom v)
+    integer idx
+    sequence tbl
+
+    tbl = enemy_list[handle][ENEMY_XML_ONCE]
+    idx = runtime_find_pair(tbl, key)
+
+    if idx = 0 then
+        tbl = append(tbl, {key, v})
+    else
+        tbl[idx][2] = v
+    end if
+
+    enemy_list[handle][ENEMY_XML_ONCE] = tbl
+end procedure
+
+global function enemy_runtime_get_timer_end(integer handle, sequence path)
+    return enemy_runtime_get_cooldown(handle, path & ".timer")
+end function
+
+global procedure enemy_runtime_set_timer_end(integer handle, sequence path, atom t)
+    enemy_runtime_set_cooldown(handle, path & ".timer", t)
+end procedure
+
+global function enemy_runtime_get_queue_index(integer handle, sequence path)
+    return floor(enemy_runtime_get_value_from_once(handle, path & ".queue_index", 1))
+end function
+
+global procedure enemy_runtime_set_queue_index(integer handle, sequence path, integer idx)
+    enemy_runtime_set_value_in_once(handle, path & ".queue_index", idx)
+end procedure
+
+
+global procedure enemy_add_condition_effect(integer handle, sequence effect_name)
+    -- stub for now
+    -- puts(1, "set effect " & effect_name & "\n")
+end procedure
+
+global procedure enemy_remove_condition_effect(integer handle, sequence effect_name)
+    -- stub for now
+    -- puts(1, "unset effect " & effect_name & "\n")
+end procedure
+
+global procedure enemy_kill(integer handle)
+    --enemy_delete(handle)
+end procedure
+
+
+global function behavior_attr_number(sequence node, sequence name, atom default_value)
+    object v
+    v = behavior_attr(node, name)
+
+    if atom(v) then
+        return default_value
+    end if
+
+    if length(v) = 0 then
+        return default_value
+    end if
+
+    return to_number(v)
+end function
+
+global function behavior_attr_int(sequence node, sequence name, integer default_value)
+    object v
+    v = behavior_attr(node, name)
+
+    if atom(v) then
+        return default_value
+    end if
+
+    if length(v) = 0 then
+        return default_value
+    end if
+
+    return floor(to_number(v))
+end function
+
+global function behavior_attr_string(sequence node, sequence name, sequence default_value)
+    object v
+    v = behavior_attr(node, name)
+
+    if atom(v) then
+        return default_value
+    end if
+
+    if length(v) = 0 then
+        return default_value
+    end if
+
+    return v
+end function
+
+-----------------------------------------------------
+-- Init / save / restore
+-----------------------------------------------------
+global procedure enemy_init()
+    enemy_list = {}
+    class_freelist = {}
+    enemy_freelist = {}
+end procedure
 
 global procedure enemy_save_state()
-  enemy_state={
-  enemy_list,
-  class_freelist,
-  enemy_freelist}
-  
+    enemy_state = {
+        enemy_list,
+        class_freelist,
+        enemy_freelist
+    }
 end procedure
 
 global procedure enemy_restore_state()
- 
-  enemy_list=enemy_state[1]
-  class_freelist=enemy_state[2]
-  enemy_freelist=enemy_state[3]
-   --enemy_state={}
+    enemy_list = enemy_state[1]
+    class_freelist = enemy_state[2]
+    enemy_freelist = enemy_state[3]
 end procedure
 
-
-
-
-integer active, free_count, total
-    active = 0
-    total = 0
-    free_count = 0
-
+-----------------------------------------------------
+-- Debug
+-----------------------------------------------------
 global procedure enemy_debug_count()
     active = 0
     total = 0
@@ -57,61 +274,70 @@ global procedure enemy_debug_count()
             active += 1
         end if
     end for
-
-
 end procedure
 
 global procedure enemy_debug_draw()
-
-    
     draw_text(0,140,"=== Enemy Count Debug === ")
-	draw_text(0,160,"Total Handles: "&sprint(total))
-	draw_text(0,180,"Active Enemies: "&sprint(active))
-	draw_text(0,200,"Free Handles: "&sprint(free_count))
-
+    draw_text(0,160,"Total Handles: " & sprint(total))
+    draw_text(0,180,"Active Enemies: " & sprint(active))
+    draw_text(0,200,"Free Handles: " & sprint(free_count))
 end procedure
 
-global function enemy_new(atom x, atom y, atom health, atom speed, integer sprite,integer frame,integer projectile)
+-----------------------------------------------------
+-- Enemy creation / access
+-----------------------------------------------------
+global function enemy_new(atom x, atom y, atom health, atom speed, integer sprite, integer frame, integer projectile)
     integer handle
+    integer obj_type
+
     if length(enemy_freelist) > 0 then
         handle = enemy_freelist[1]
-        enemy_freelist = enemy_freelist[2..length(enemy_freelist)]
+        if length(enemy_freelist) = 1 then
+            enemy_freelist = {}
+        else
+            enemy_freelist = enemy_freelist[2..length(enemy_freelist)]
+        end if
     else
         enemy_list = append(enemy_list, {})
         handle = length(enemy_list)
     end if
-	
-	if sequence( object_delta(projectile, object_maxhitpoints) ) then
-	   health=real(object_delta(projectile, object_maxhitpoints))
-	end if
-			  
 
+    if sequence(object_delta(projectile, object_maxhitpoints)) then
+        health = real(object_delta(projectile, object_maxhitpoints))
+    end if
+
+    obj_type = projectile
+
+
+    
     enemy_list[handle] = {
-        x,                      -- ENEMY_X
-        y,                      -- ENEMY_Y
-        health,                 -- ENEMY_HEALTH
-        speed,                  -- ENEMY_SPEED
-        0,                      -- ENEMY_STATE
-        0, 0,                   -- ENEMY_TARGET_X, ENEMY_TARGET_Y
-        sprite,                 -- ENEMY_SPRITE
-        frame,              -- ENEMY_FRAMEINDEX
-        grid_new(x, y, handle), -- ENEMY_GRID_HANDLE
-        current_time() + 1000,  -- ENEMY_NEXT_SHOT
-        1500,                   -- ENEMY_SHOOT_INTERVAL (1.5 sec)
-        8,                  -- ENEMY_SHOOT_RANGE
-        x,                      -- ENEMY_START_X
-        y,                       -- ENEMY_START_Y
-		projectile,
-		health
-    }
+    x,
+    y,
+    health,
+    speed,
+    0,
+    x,
+    y,
+    sprite,
+    frame,
+    grid_new(x, y, handle),
+    current_time() + 1000,
+    1500,
+    8,
+    x,
+    y,
+    projectile,
+    health,
+    obj_type,
+    {},
+    {},
+    "idle",
+    0
+}
 
     return handle
 end function
 
-
-
-
--- Function to get enemy properties
 global function enemy_get_x(integer handle)
     return enemy_list[handle][ENEMY_X]
 end function
@@ -134,106 +360,242 @@ end procedure
 
 global procedure enemy_delete(integer handle)
     integer grid_handle
-	
-	if handle < 1 or handle > length(enemy_list) then 
-      puts(1,"enemy_delete error\n")
-      return 
+
+    if handle < 1 or handle > length(enemy_list) then
+        puts(1, "enemy_delete error\n")
+        return
     end if
-	if length( enemy_list[handle]) then
-	grid_handle = enemy_list[handle][ENEMY_GRID_HANDLE]
-    empty_delete(grid_handle)
-	
-    enemy_list[handle] = {}
-    enemy_freelist = append(enemy_freelist, handle)
-	end if
+
+    if length(enemy_list[handle]) then
+        grid_handle = enemy_list[handle][ENEMY_GRID_HANDLE]
+        empty_delete(grid_handle)
+
+        enemy_list[handle] = {}
+        enemy_freelist = append(enemy_freelist, handle)
+    end if
 end procedure
 
 -----------------------------------------------------
--- Enemy Shooting Logic
+-- Basic movement / distance helpers
 -----------------------------------------------------
-integer bullet_id
-bullet_id = 0
+global function enemy_distance_to_player(integer handle)
+    atom dx, dy
+    dx = player_x - enemy_list[handle][ENEMY_X]
+    dy = player_y - enemy_list[handle][ENEMY_Y]
+    return sqrt(dx * dx + dy * dy)
+end function
 
+
+global procedure enemy_move_towards(integer handle, atom tx, atom ty, atom move_speed)
+    atom dt,dx, dy, dist, move_x, move_y
+
+    dx = tx - enemy_list[handle][ENEMY_X]
+    dy = ty - enemy_list[handle][ENEMY_Y]
+    dist = sqrt(dx * dx + dy * dy)
+    
+    
+dt = enemy_list[handle][ENEMY_DELTA_TIME]/1000
+--puts(1, "dt=" & sprint(dt) & " speed=" & sprint(move_speed) & "\n")
+
+
+
+    if dist > 0 then
+        if move_speed * dt >= dist then 
+            enemy_set_x(handle, tx)
+            enemy_set_y(handle, ty)
+        else
+            move_x = enemy_list[handle][ENEMY_X] + (dx / dist) * move_speed *dt
+            move_y = enemy_list[handle][ENEMY_Y] + (dy / dist) * move_speed *dt
+            enemy_set_x(handle, move_x)
+            enemy_set_y(handle, move_y)
+        end if
+    end if
+end procedure
+
+global procedure enemy_move_away_from(integer handle, atom tx, atom ty, atom move_speed)
+    atom dt,dx, dy, dist, move_x, move_y
+
+    dx = enemy_list[handle][ENEMY_X] - tx
+    dy = enemy_list[handle][ENEMY_Y] - ty
+    dist = sqrt(dx * dx + dy * dy)
+    
+    dt = enemy_list[handle][ENEMY_DELTA_TIME]/1000
+
+    if dist > 1.0 then
+        move_x = enemy_list[handle][ENEMY_X] + (dx / dist) * move_speed *dt
+        move_y = enemy_list[handle][ENEMY_Y] + (dy / dist) * move_speed *dt
+        enemy_set_x(handle, move_x)
+        enemy_set_y(handle, move_y)
+    end if
+end procedure
+
+-----------------------------------------------------
+-- Old hardcoded shooting
+-----------------------------------------------------
 global procedure enemy_shoot(integer handle)
-    integer numofshoot, arcgap, ret, item,modify
+    integer numofshoot, arcgap, ret, item, modify
     atom x, y
 
-    item = enemy_list[handle][ENEMY_PROJECTILE]--
+    item = enemy_list[handle][ENEMY_PROJECTILE]
     x = enemy_list[handle][ENEMY_X]
     y = enemy_list[handle][ENEMY_Y]
-	
-	if item=1620 then --medusa
-       --numofshoot = real(object_delta(item, object_numprojectiles))
-	   numofshoot = 5
-	   arcgap = 10
-	   modify=-40
-    elsif item=1621 then --ent god
-	    modify=-30
+
+    if item = 1620 then
+        numofshoot = 5
+        arcgap = 10
+        modify = -40
+    elsif item = 1621 then
+        modify = -30
         arcgap = 10
         numofshoot = 3
-		
-    elsif item=1618 then --sprite god
-	    modify=-35
+    elsif item = 1618 then
+        modify = -35
         arcgap = 10
         numofshoot = 4
-		
-    elsif item=1623 then --flying brain
-	    modify=-40
+    elsif item = 1623 then
+        modify = -40
         arcgap = 10
         numofshoot = 5
-		
-     elsif item=2330 then --Djinn
-	    modify=-40
+    elsif item = 2330 then
+        modify = -40
         arcgap = 10
         numofshoot = 5
-		
-    else 
-	  modify=0
-      arcgap = 0
-      numofshoot = 1
+    else
+        modify = 0
+        arcgap = 0
+        numofshoot = 1
     end if
 
+    if sequence(object_delta(item, object_numprojectiles)) then
+        numofshoot = real(object_delta(item, object_numprojectiles))
+    end if
 
-  if sequence(object_delta(item, object_numprojectiles)) then
-    numofshoot=real(object_delta(item, object_numprojectiles))
-  else
-    --numofshoot=1
-  end if
-  
-  if sequence(object_delta(item, object_arcgap)) then
-    arcgap=real(object_delta(item, object_arcgap))
-  else
-    --arcgap=0
-  end if
-
-    
+    if sequence(object_delta(item, object_arcgap)) then
+        arcgap = real(object_delta(item, object_arcgap))
+    end if
 
     for i = 1 to numofshoot do
         ret = projectile_enemy_enter(
             projectile_enemy_list,
             x, y,
-            get_angle_to(x, y, player_x, player_y) + (arcgap * i)+ modify,
+            get_angle_to(x, y, player_x, player_y) + (arcgap * i) + modify,
             current_time(),
             bullet_id,
             item,
-            -1
+            0,
+            1
         )
         bullet_id += 1
     end for
 end procedure
 
 -----------------------------------------------------
--- Enemy Update Logic
+-- XML shooting helpers
 -----------------------------------------------------
-constant WANDER_RADIUS = 50.0
-constant WANDER_LIMIT  = 100.0  -- max distance from start position
-constant CHASE_RANGE   = 10.0
-constant FLEE_RANGE    = 50.0
-constant FLEE_THRESHOLD = 50.0
 
-global procedure enemy_update(integer handle)
-    atom dx, dy, dist, angle, move_x, move_y, now
-    integer state, grid_handle
+global procedure enemy_fire_single_angle(integer handle, atom angle_deg, integer projectile_index)
+    integer item, ret
+    atom x, y
+
+    item = enemy_list[handle][ENEMY_PROJECTILE]
+    x = enemy_list[handle][ENEMY_X]
+    y = enemy_list[handle][ENEMY_Y]
+
+    ret = projectile_enemy_enter(
+        projectile_enemy_list,
+        x,
+        y,
+        angle_deg,
+        current_time(),
+        bullet_id,
+        item,
+        0,
+        projectile_index
+    )
+    
+    --puts(1, "spawn item=" & sprint(item) & " proj=" & sprint(projectile_index) & "\n")
+
+    bullet_id += 1
+end procedure
+
+
+global procedure enemy_fire_multi_angle(integer handle, atom base_angle_deg, atom arcgap_deg, integer count, integer projectile_index)
+    atom start_angle
+
+    start_angle = base_angle_deg - ((count - 1) * arcgap_deg) / 2.0
+
+    for i = 0 to count - 1 do
+        enemy_fire_single_angle(handle, start_angle + arcgap_deg * i, projectile_index)
+    end for
+end procedure
+
+-----------------------------------------------------
+-- Old hardcoded behavior pieces
+-----------------------------------------------------
+global procedure enemy_try_shoot(integer handle)
+    atom dist, now
+
+    dist = enemy_distance_to_player(handle)
+    now = current_time()
+
+    if dist <= enemy_list[handle][ENEMY_SHOOT_RANGE] then
+        if now >= enemy_list[handle][ENEMY_NEXT_SHOT] then
+            enemy_shoot(handle)
+            enemy_list[handle][ENEMY_NEXT_SHOT] = now + enemy_list[handle][ENEMY_SHOOT_INTERVAL]
+        end if
+    end if
+end procedure
+
+global procedure enemy_do_wander(integer handle)
+    atom angle, dx, dy, dist
+    atom startx, starty
+
+    startx = enemy_list[handle][ENEMY_START_X]
+    starty = enemy_list[handle][ENEMY_START_Y]
+
+    if rand(100) < 10 then
+        angle = rand(360) * PI / 180.0
+        enemy_list[handle][ENEMY_TARGET_X] = startx + cos(angle) * WANDER_RADIUS
+        enemy_list[handle][ENEMY_TARGET_Y] = starty + sin(angle) * WANDER_RADIUS
+    end if
+
+    dx = enemy_list[handle][ENEMY_X] - startx
+    dy = enemy_list[handle][ENEMY_Y] - starty
+    dist = sqrt(dx * dx + dy * dy)
+
+    if dist > WANDER_LIMIT then
+        enemy_list[handle][ENEMY_TARGET_X] = startx
+        enemy_list[handle][ENEMY_TARGET_Y] = starty
+    end if
+
+    enemy_try_shoot(handle)
+    enemy_move_towards(handle,
+        enemy_list[handle][ENEMY_TARGET_X],
+        enemy_list[handle][ENEMY_TARGET_Y],
+        enemy_list[handle][ENEMY_SPEED]/ 1.5
+    )
+end procedure
+
+global procedure enemy_do_chase(integer handle)
+    --puts(1,"enemy do chase\n")
+    enemy_list[handle][ENEMY_TARGET_X] = player_x
+    enemy_list[handle][ENEMY_TARGET_Y] = player_y
+    --puts(1,"enemy speed "&sprint(enemy_list[handle][ENEMY_SPEED])&"\n")
+    enemy_move_towards(handle, player_x, player_y, enemy_list[handle][ENEMY_SPEED]/ 1.5)
+    enemy_try_shoot(handle)
+end procedure
+
+global procedure enemy_do_flee(integer handle)
+    enemy_move_away_from(handle, player_x, player_y, enemy_list[handle][ENEMY_SPEED] * 1.5)
+    enemy_try_shoot(handle)
+end procedure
+
+-----------------------------------------------------
+-- Old hardcoded full update
+-----------------------------------------------------
+global procedure enemy_update_old(integer handle)
+    atom dx, dy, dist, now
+    integer state
     atom health_percent
     atom startx, starty
 
@@ -242,19 +604,16 @@ global procedure enemy_update(integer handle)
     end if
 
     state = enemy_list[handle][ENEMY_STATE]
-    health_percent = enemy_list[handle][ENEMY_HEALTH] /  enemy_list[handle][ENEMY_MAXHEALTH]
-    grid_handle = enemy_list[handle][ENEMY_GRID_HANDLE]
+    health_percent = enemy_list[handle][ENEMY_HEALTH] / enemy_list[handle][ENEMY_MAXHEALTH]
     now = current_time()
 
     startx = enemy_list[handle][ENEMY_START_X]
     starty = enemy_list[handle][ENEMY_START_Y]
 
-    -- Calculate distance to player
     dx = player_x - enemy_list[handle][ENEMY_X]
     dy = player_y - enemy_list[handle][ENEMY_Y]
     dist = sqrt(dx * dx + dy * dy)
 
-    -- Behavior transitions
     if (health_percent <= FLEE_THRESHOLD / 100.0) or (state = 2 and dist < FLEE_RANGE) then
         if (state = 2 and dist < FLEE_RANGE) then
             state = 2
@@ -268,87 +627,606 @@ global procedure enemy_update(integer handle)
     end if
     enemy_list[handle][ENEMY_STATE] = state
 
-    -- Movement
-    if state = 0 then  -- Wander
-        -- occasionally pick a new random target within WANDER_RADIUS
-        if rand(100) < 10 then
+    if state = 0 then
+        enemy_do_wander(handle)
+    elsif state = 1 then
+        enemy_do_chase(handle)
+    elsif state = 2 then
+        enemy_do_flee(handle)
+    end if
+end procedure
+
+-----------------------------------------------------
+-- XML behavior actions
+-----------------------------------------------------
+
+global function enemy_behavior_simplewandering(integer handle, atom speed)
+    atom dx, dy, dist, angle, tx, ty
+    atom ex, ey, startx, starty
+    atom from_start_x, from_start_y, from_start_dist
+
+    ex = enemy_list[handle][ENEMY_X]
+    ey = enemy_list[handle][ENEMY_Y]
+    startx = enemy_list[handle][ENEMY_START_X]
+    starty = enemy_list[handle][ENEMY_START_Y]
+
+    dx = enemy_list[handle][ENEMY_TARGET_X] - ex
+    dy = enemy_list[handle][ENEMY_TARGET_Y] - ey
+    dist = sqrt(dx * dx + dy * dy)
+
+    from_start_x = ex - startx
+    from_start_y = ey - starty
+    from_start_dist = sqrt(from_start_x * from_start_x + from_start_y * from_start_y)
+
+    if dist < 0.2 then
+        if from_start_dist >= 5.0 then
+            angle = get_angle_to(ex, ey, startx, starty) * PI / 180.0
+            tx = startx + cos(angle) * 4.0
+            ty = starty + sin(angle) * 4.0
+        else
             angle = rand(360) * PI / 180.0
-            enemy_list[handle][ENEMY_TARGET_X] = startx + cos(angle) * WANDER_RADIUS
-            enemy_list[handle][ENEMY_TARGET_Y] = starty + sin(angle) * WANDER_RADIUS
+            tx = startx + cos(angle) * 5.0
+            ty = starty + sin(angle) * 5.0
         end if
 
-        -- Check if enemy is too far from start position
-        dx = enemy_list[handle][ENEMY_X] - startx
-        dy = enemy_list[handle][ENEMY_Y] - starty
-        dist = sqrt(dx * dx + dy * dy)
-        if dist > WANDER_LIMIT then
-            -- move back toward start position if too far away
-            enemy_list[handle][ENEMY_TARGET_X] = startx
-            enemy_list[handle][ENEMY_TARGET_Y] = starty
+        enemy_list[handle][ENEMY_TARGET_X] = tx
+        enemy_list[handle][ENEMY_TARGET_Y] = ty
+    end if
+
+    enemy_move_towards(
+        handle,
+        enemy_list[handle][ENEMY_TARGET_X],
+        enemy_list[handle][ENEMY_TARGET_Y],
+        speed/ 1.5
+    )
+
+    return 1
+end function
+
+global function enemy_behavior_chasing(integer handle, atom speed, atom range, atom acquire_range, object target)
+    atom dist
+
+    dist = enemy_distance_to_player(handle)
+
+    if acquire_range <= 0 then
+        acquire_range = range
+    end if
+
+    if dist <= acquire_range then
+        enemy_list[handle][ENEMY_XML_STATE] = "chasing"
+    elsif dist > range then
+        enemy_list[handle][ENEMY_XML_STATE] = "idle"
+    end if
+
+    if equal(enemy_list[handle][ENEMY_XML_STATE], "chasing") then
+        enemy_move_towards(handle, player_x, player_y, speed / 1.5)
+        return 1
+    end if
+
+    return 0
+end function
+
+global function enemy_behavior_ringattack(integer handle, atom range, integer count, atom offset_radians, integer projectile_index)
+    atom dist
+    atom base_angle, angle_inc, angle_deg, offset_deg
+
+    dist = enemy_distance_to_player(handle)
+    if dist > range then
+        --return 0
+    end if
+
+    if count < 1 then
+        count = 12
+    end if
+
+    base_angle = get_angle_to(
+        enemy_list[handle][ENEMY_X],
+        enemy_list[handle][ENEMY_Y],
+        player_x,
+        player_y
+    )
+
+    offset_deg = offset_radians * 180.0 / PI
+    angle_inc = 360.0 / count
+
+    for i = 0 to count - 1 do
+        angle_deg = base_angle + offset_deg + angle_inc * i
+        enemy_fire_single_angle(handle, angle_deg, projectile_index)
+    end for
+
+    return 2
+end function
+
+global function enemy_behavior_multiattack(integer handle, atom range, atom arc_radians, integer count, atom offset_radians, integer projectile_index)
+    atom dist, ang, arc_deg, offset_deg
+
+    dist = enemy_distance_to_player(handle)
+    if dist > range then
+        return 0
+    end if
+
+    ang = get_angle_to(
+        enemy_list[handle][ENEMY_X],
+        enemy_list[handle][ENEMY_Y],
+        player_x,
+        player_y
+    )
+
+    arc_deg = arc_radians * 180.0 / PI
+    offset_deg = offset_radians * 180.0 / PI
+
+    enemy_fire_multi_angle(handle, ang + offset_deg, arc_deg, count, projectile_index)
+    return 2
+end function
+
+global function enemy_behavior_predictiveattack(integer handle, atom range, atom lead, integer projectile_index)
+    atom dist, ang
+
+    dist = enemy_distance_to_player(handle)
+    if dist > range then
+        return 0
+    end if
+
+    ang = get_angle_to(
+        enemy_list[handle][ENEMY_X],
+        enemy_list[handle][ENEMY_Y],
+        player_x,
+        player_y
+    )
+
+    enemy_fire_single_angle(handle, ang, projectile_index)
+    return 2
+end function
+
+global function enemy_behavior_predictivemultiattack(integer handle, atom range, atom arc_radians, integer count, atom lead, integer projectile_index)
+    atom dist, ang, arc_deg
+
+    dist = enemy_distance_to_player(handle)
+    if dist > range then
+        return 0
+    end if
+
+    ang = get_angle_to(
+        enemy_list[handle][ENEMY_X],
+        enemy_list[handle][ENEMY_Y],
+        player_x,
+        player_y
+    )
+
+    arc_deg = arc_radians * 180.0 / PI
+    enemy_fire_multi_angle(handle, ang, arc_deg, count, projectile_index)
+    return 2
+end function
+
+
+-----------------------------------------------------
+-- XML evaluator
+-----------------------------------------------------
+
+global function enemy_eval_behavior_node(integer handle, sequence node, sequence path)
+    sequence tag, children
+    atom now_time, delay, range, arc, lead, speed, offset, hp, end_time, acquire_range
+    integer count, projectile_index, idx, ret
+    sequence s
+    object target
+    sequence child_path
+    integer did_any
+
+
+    if atom(node) then
+        return 0
+    end if
+
+    if length(node) = 0 then
+        return 0
+    end if
+
+    tag = behavior_node_tag(node)
+    now_time = current_time()
+    children = behavior_node_children(node)
+    did_any = 0
+    projectile_index = -1
+
+    --------------------------------------------------
+    -- CONTAINER NODES
+    --------------------------------------------------
+
+    if equal(tag, "behaviors") or equal(tag, "conditionalbehaviors") then
+        for i = 1 to length(children) do
+            child_path = path & "." & sprint(i)
+            if enemy_eval_behavior_node(handle, children[i], child_path) != 0 then
+                did_any = 1
+            end if
+        end for
+        return did_any
+    end if
+
+    if equal(tag, "runbehaviors") then
+        did_any = 0
+        for i = 1 to length(children) do
+            child_path = path & "." & sprint(i)
+            ret = enemy_eval_behavior_node(handle, children[i], child_path)
+            if ret != 0 then
+                did_any = 1
+            end if
+        end for
+
+        if did_any then
+            return 2
         end if
-		
-		dx = enemy_list[handle][ENEMY_X] - player_x
-        dy = enemy_list[handle][ENEMY_Y] - player_y
-        dist = sqrt(dx * dx + dy * dy)
-		
-		-- 🔫 Shooting check
-        if dist <= enemy_list[handle][ENEMY_SHOOT_RANGE] then
-            if now >= enemy_list[handle][ENEMY_NEXT_SHOT] then
-                enemy_shoot(handle)
-                enemy_list[handle][ENEMY_NEXT_SHOT] = now + enemy_list[handle][ENEMY_SHOOT_INTERVAL]
+        return 0
+    end if
+
+    --------------------------------------------------
+    -- COOLDOWN
+    -- returns:
+    -- 0 = inactive
+    -- 1 = waiting/running
+    -- 2 = finished this step
+    --------------------------------------------------
+
+if equal(tag, "cooldown") then
+        delay = behavior_attr_number(node, "time", 0)
+
+        if now_time >= enemy_runtime_get_cooldown(handle, path) then
+            enemy_runtime_set_cooldown(handle, path, now_time + delay)
+
+            if length(children) = 0 then
+                return 2
+            end if
+
+            did_any = 0
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                ret = enemy_eval_behavior_node(handle, children[i], child_path)
+                if ret != 0 then
+                    did_any = 1
+                end if
+            end for
+
+            if did_any then
+                return 2
+            end if
+
+            return 2
+        end if
+
+        return 1
+    end if
+    
+    
+    --------------------------------------------------
+    -- ONCE
+    --------------------------------------------------
+
+    if equal(tag, "once") then
+        if enemy_runtime_get_once(handle, path) = 0 then
+            enemy_runtime_set_once(handle, path, 1)
+
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) != 0 then
+                    did_any = 1
+                end if
+            end for
+
+            if did_any = 0 then
+                return 2
+            end if
+            return did_any
+        end if
+
+        return 0
+    end if
+
+    
+        --------------------------------------------------
+    -- IF / IFNOT
+    --------------------------------------------------
+
+    if equal(tag, "ifnot") then
+        if length(children) >= 1 then
+            if enemy_eval_behavior_node(handle, children[1], path & ".1") = 0 then
+                if length(children) >= 2 then
+                    return enemy_eval_behavior_node(handle, children[2], path & ".2")
+                end if
+                return 0
+            else
+                return 1
             end if
         end if
-
-        -- Move toward target
-        dx = enemy_list[handle][ENEMY_TARGET_X] - enemy_list[handle][ENEMY_X]
-        dy = enemy_list[handle][ENEMY_TARGET_Y] - enemy_list[handle][ENEMY_Y]
-        dist = sqrt(dx * dx + dy * dy)
-        if dist > 1.0 then
-            move_x = enemy_list[handle][ENEMY_X] + (dx / dist) * enemy_list[handle][ENEMY_SPEED]
-            move_y = enemy_list[handle][ENEMY_Y] + (dy / dist) * enemy_list[handle][ENEMY_SPEED]
-            enemy_set_x(handle, move_x)
-            enemy_set_y(handle, move_y)
-        end if
-
-    elsif state = 1 then  -- Chase
-        enemy_list[handle][ENEMY_TARGET_X] = player_x
-        enemy_list[handle][ENEMY_TARGET_Y] = player_y
-        dx = enemy_list[handle][ENEMY_TARGET_X] - enemy_list[handle][ENEMY_X]
-        dy = enemy_list[handle][ENEMY_TARGET_Y] - enemy_list[handle][ENEMY_Y]
-        dist = sqrt(dx * dx + dy * dy)
-        if dist > 1.0 then
-            move_x = enemy_list[handle][ENEMY_X] + (dx / dist) * enemy_list[handle][ENEMY_SPEED]
-            move_y = enemy_list[handle][ENEMY_Y] + (dy / dist) * enemy_list[handle][ENEMY_SPEED]
-            enemy_set_x(handle, move_x)
-            enemy_set_y(handle, move_y)
-        end if
-
-        -- 🔫 Shooting check
-        if dist <= enemy_list[handle][ENEMY_SHOOT_RANGE] then
-            if now >= enemy_list[handle][ENEMY_NEXT_SHOT] then
-                enemy_shoot(handle)
-                enemy_list[handle][ENEMY_NEXT_SHOT] = now + enemy_list[handle][ENEMY_SHOOT_INTERVAL]
+        return 0
+    end if
+    
+     if equal(tag, "if") then
+        if length(children) >= 2 then
+            ret = enemy_eval_behavior_node(handle, children[1], path & ".1")
+            if ret != 0 then
+                return enemy_eval_behavior_node(handle, children[2], path & ".2")
             end if
         end if
+        return 0
+    end if
 
-    elsif state = 2 then  -- Flee
-        dx = enemy_list[handle][ENEMY_X] - player_x
-        dy = enemy_list[handle][ENEMY_Y] - player_y
-        dist = sqrt(dx * dx + dy * dy)
-        if dist > 1.0 then
-            move_x = enemy_list[handle][ENEMY_X] + (dx / dist) * enemy_list[handle][ENEMY_SPEED] * 1.5
-            move_y = enemy_list[handle][ENEMY_Y] + (dy / dist) * enemy_list[handle][ENEMY_SPEED] * 1.5
-            enemy_set_x(handle, move_x)
-            enemy_set_y(handle, move_y)
+    if equal(tag, "isentitypresent") then
+        range = behavior_attr_number(node, "range", 10)
+
+        if enemy_distance_to_player(handle) <= range then
+            return 1
         end if
-		
-		-- 🔫 Shooting check
-        if dist <= enemy_list[handle][ENEMY_SHOOT_RANGE] then
-            if now >= enemy_list[handle][ENEMY_NEXT_SHOT] then
-                enemy_shoot(handle)
-                enemy_list[handle][ENEMY_NEXT_SHOT] = now + enemy_list[handle][ENEMY_SHOOT_INTERVAL]
+
+        return 0
+    end if
+
+
+    --------------------------------------------------
+    -- HP CONDITIONS
+    --------------------------------------------------
+
+    if equal(tag, "hpgreaterequal") then
+        hp = behavior_attr_number(node, "hp", 0)
+
+        if enemy_list[handle][ENEMY_HEALTH] >= hp then
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) != 0 then
+                    did_any = 1
+                end if
+            end for
+            return did_any
+        end if
+
+        return 0
+    end if
+
+    if equal(tag, "hplessercond") then
+        hp = behavior_attr_number(node, "hp", 0)
+
+        if enemy_list[handle][ENEMY_HEALTH] < hp then
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) != 0 then
+                    did_any = 1
+                end if
+            end for
+            return did_any
+        end if
+
+        return 0
+    end if
+
+    --------------------------------------------------
+    -- TIMED
+    --------------------------------------------------
+
+    if equal(tag, "timed") then
+        delay = behavior_attr_number(node, "time", 0)
+        end_time = enemy_runtime_get_timer_end(handle, path)
+
+        if end_time = 0 then
+            end_time = now_time + delay
+            enemy_runtime_set_timer_end(handle, path, end_time)
+        end if
+
+        if now_time < end_time then
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) != 0 then
+                    did_any = 1
+                end if
+            end for
+            return 1
+        end if
+
+        enemy_runtime_set_timer_end(handle, path, 0)
+        return 2
+    end if
+
+    --------------------------------------------------
+    -- QUEUEDBEHAVIOR
+    --------------------------------------------------
+
+
+    
+       if equal(tag, "queuedbehavior") then
+        if length(children) = 0 then
+            return 0
+        end if
+
+        idx = enemy_runtime_get_queue_index(handle, path)
+
+        if idx < 1 then
+            idx = 1
+            enemy_runtime_set_queue_index(handle, path, idx)
+        end if
+
+        if idx > length(children) then
+            enemy_runtime_set_queue_index(handle, path, 1)
+            return 2
+        end if
+
+        child_path = path & "." & sprint(idx)
+        ret = enemy_eval_behavior_node(handle, children[idx], child_path)
+
+        --printf(1, "queue %s idx=%d ret=%d\n", {path, idx, ret})
+        
+        if ret = 2 then
+            idx += 1
+
+            if idx > length(children) then
+                enemy_runtime_set_queue_index(handle, path, 1)
+                return 2
             end if
+
+            enemy_runtime_set_queue_index(handle, path, idx)
+            return 1
         end if
+
+        if ret != 0 then
+            return 1
+        end if
+
+        idx += 1
+
+        if idx > length(children) then
+            enemy_runtime_set_queue_index(handle, path, 1)
+            return 2
+        end if
+
+        enemy_runtime_set_queue_index(handle, path, idx)
+        return 1
+    end if
+
+    --------------------------------------------------
+    -- SIMPLE PASS-THROUGH WRAPPERS
+    --------------------------------------------------
+
+    if equal(tag, "false") then
+        for i = 1 to length(children) do
+            child_path = path & "." & sprint(i)
+            if enemy_eval_behavior_node(handle, children[i], child_path) != 0 then
+                did_any = 1
+            end if
+        end for
+        return did_any
+    end if
+
+    --------------------------------------------------
+    -- ACTION NODES
+    --------------------------------------------------
+
+    if equal(tag, "simplewandering") then
+        speed = behavior_attr_number(node, "speed", enemy_list[handle][ENEMY_SPEED])
+        return enemy_behavior_simplewandering(handle, speed)
+    end if
+
+    if equal(tag, "chasing") then
+        speed = behavior_attr_number(node, "speed", enemy_list[handle][ENEMY_SPEED])
+        range = behavior_attr_number(node, "range", 8)
+        acquire_range = behavior_attr_number(node, "acquireRange", range)
+        target = behavior_attr(node, "target")
+        return enemy_behavior_chasing(handle, speed, range, acquire_range, target)
+    end if
+
+    if equal(tag, "ringattack") then
+        range = behavior_attr_number(node, "range", 8)
+        count = behavior_attr_int(node, "count", 12)
+        offset = behavior_attr_number(node, "offset", 0)
+        projectile_index = behavior_attr_int(node, "projectileIndex", 1)
+        return enemy_behavior_ringattack(handle, range, count, offset, projectile_index)
+    end if
+
+    if equal(tag, "simpleattack") then
+        range = behavior_attr_number(node, "range", 8)
+        projectile_index = behavior_attr_int(node, "projectileIndex", 1)
+        return enemy_behavior_multiattack(handle, range, 0, 1, 0, projectile_index)
+    end if
+
+    if equal(tag, "multiattack") then
+        range = behavior_attr_number(node, "range", 8)
+        arc = behavior_attr_number(node, "arc", 0)
+        count = behavior_attr_int(node, "count", 1)
+        offset = behavior_attr_number(node, "offset", 0)
+        projectile_index = behavior_attr_int(node, "projectileIndex", 1)
+        return enemy_behavior_multiattack(handle, range, arc, count, offset, projectile_index)
+    end if
+
+    if equal(tag, "predictiveattack") then
+        range = behavior_attr_number(node, "range", 8)
+        lead = behavior_attr_number(node, "lead", 1)
+        projectile_index = behavior_attr_int(node, "projectileIndex", 1)
+        return enemy_behavior_predictiveattack(handle, range, lead, projectile_index)
+    end if
+
+    if equal(tag, "predictivemultiattack") then
+        range = behavior_attr_number(node, "range", 8)
+        arc = behavior_attr_number(node, "arc", 0)
+        count = behavior_attr_int(node, "count", 1)
+        lead = behavior_attr_number(node, "lead", 1)
+        projectile_index = behavior_attr_int(node, "projectileIndex", 1)
+        return enemy_behavior_predictivemultiattack(handle, range, arc, count, lead, projectile_index)
+    end if
+
+    if equal(tag, "setconditioneffect") then
+        s = behavior_attr_string(node, "effect", "")
+        enemy_add_condition_effect(handle, s)
+        return 2
+    end if
+
+    if equal(tag, "unsetconditioneffect") then
+        s = behavior_attr_string(node, "effect", "")
+        enemy_remove_condition_effect(handle, s)
+        return 2
+    end if
+
+    if equal(tag, "flashing") then
+        return 1
+    end if
+
+    if equal(tag, "die") then
+        enemy_delete(handle)
+        return 2
+    end if
+
+    if equal(tag, "state") then
+        s = behavior_attr_string(node, "name", "")
+        if equal(s, enemy_list[handle][ENEMY_XML_STATE]) then
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) != 0 then
+                    did_any = 1
+                end if
+            end for
+            return did_any
+        end if
+        return 0
+    end if
+
+     --printf(1, "Unknown behavior tag: %s at %s\n", {tag, path})
+    return 0
+end function
+
+
+
+
+
+-----------------------------------------------------
+-- XML update
+-----------------------------------------------------
+global procedure enemy_update_xml(integer handle)
+    integer obj_type
+    sequence root
+    integer ret
+
+    obj_type = enemy_list[handle][ENEMY_TYPE]
+    root = enemy_behavior_get_root(obj_type)
+
+    if length(root) then
+        ret = enemy_eval_behavior_node(handle, root, "1")
+    else
+        enemy_update_old(handle)
+    end if
+end procedure
+
+-----------------------------------------------------
+-- Main update
+-----------------------------------------------------
+global procedure enemy_update(integer handle, atom dt)
+    integer grid_handle, obj_type
+
+    if not length(enemy_list[handle]) then
+        return
+    end if
+    
+    enemy_list[handle][ENEMY_DELTA_TIME]=dt
+
+    grid_handle = enemy_list[handle][ENEMY_GRID_HANDLE]
+    obj_type = enemy_list[handle][ENEMY_TYPE]
+
+    if enemy_behavior_exists(obj_type) then
+        enemy_update_xml(handle)
+    else
+        enemy_update_old(handle)
     end if
 
     grid_update_position(grid_handle, enemy_list[handle][ENEMY_X], enemy_list[handle][ENEMY_Y])

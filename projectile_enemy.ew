@@ -10,6 +10,7 @@ global constant projectile_enemy_start_time = 4
 global constant projectile_enemy_bullet_id = 5
 global constant projectile_enemy_type = 6
 global constant projectile_enemy_light = 7
+global constant projectile_enemy_projectile_index = 8
 
 
 global function projectile_enemy_new()
@@ -35,19 +36,24 @@ class_freelist={}
 projectile_enemy_freelist={}
 end procedure 
 
-global function projectile_enemy_enter(integer handle,atom x, atom y, atom angle, atom start_time, integer  bullet_id, integer ctype, integer light)
-integer index
-  if length(projectile_enemy_freelist[handle])>0 then
-    index=projectile_enemy_freelist[handle][1]
-	projectile_enemy_freelist[handle] = projectile_enemy_freelist[handle][2..length(projectile_enemy_freelist[handle])]
-	class_list[handle][index]={x,y,angle,start_time,bullet_id,ctype,light}
-	return index
-  else
-    class_list[handle]=append(class_list[handle],{x,y,angle,start_time,bullet_id,ctype,light})
-	return length(class_list[handle])
-  end if
+global function projectile_enemy_enter(integer handle, atom x, atom y, atom angle, atom start_time, integer bullet_id, integer ctype, integer light, integer projectile_index)
+    integer index
 
-  
+    if length(projectile_enemy_freelist[handle]) > 0 then
+        index = projectile_enemy_freelist[handle][1]
+
+        if length(projectile_enemy_freelist[handle]) = 1 then
+            projectile_enemy_freelist[handle] = {}
+        else
+            projectile_enemy_freelist[handle] = projectile_enemy_freelist[handle][2..length(projectile_enemy_freelist[handle])]
+        end if
+
+        class_list[handle][index] = {x, y, angle, start_time, bullet_id, ctype, light, projectile_index}
+        return index
+    else
+        class_list[handle] = append(class_list[handle], {x, y, angle, start_time, bullet_id, ctype, light, projectile_index})
+        return length(class_list[handle])
+    end if
 end function
 
 global function projectile_enemy_get_list(integer handle)

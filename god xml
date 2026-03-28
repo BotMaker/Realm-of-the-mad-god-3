@@ -1,3 +1,41 @@
+    if equal(tag, "queuedbehavior") then
+        if length(children) = 0 then
+            return 0
+        end if
+
+        idx = enemy_runtime_get_queue_index(handle, path)
+
+        if idx < 1 or idx > length(children) then
+            idx = 1
+            enemy_runtime_set_queue_index(handle, path, idx)
+        end if
+
+        child_path = path & "." & sprint(idx)
+        ret = enemy_eval_behavior_node(handle, children[idx], child_path)
+
+        if ret = 2 then
+            idx += 1
+            if idx > length(children) then
+                idx = 1
+            end if
+            enemy_runtime_set_queue_index(handle, path, idx)
+            return 1
+        end if
+
+        if ret != 0 then
+            return 1
+        end if
+
+        idx += 1
+        if idx > length(children) then
+            idx = 1
+        end if
+        enemy_runtime_set_queue_index(handle, path, idx)
+        return 1
+    end if
+
+
+
 <enemies>
 
   <enemy id="0x651" name="White Demon">
@@ -345,13 +383,9 @@
     </loot>
   </enemy>
 
-   <enemy id="0x091a" name="Djinn">
+  <enemy id="0x091a" name="Djinn">
     <behaviors>
-      <cooldown time="1500">
-          <multiattack range="15" arc="0.3490658504" count="3" />
-          </cooldown>
       <hpgreaterequal hp="400">
-
         <queuedbehavior>
           <setconditioneffect effect="Invulnerable" />
           <timed time="2500">
@@ -359,8 +393,6 @@
               <chasing speed="6" range="7" acquireRange="0" target="null" />
             </false>
           </timed>
-          
-
           <unsetconditioneffect effect="Invulnerable" />
           <if>
             <isentitypresent range="10" target="null" />
@@ -368,8 +400,29 @@
               <cooldown time="200" />
               <runbehaviors>
                 <ringattack range="4" offset="0.0" />
+                <ringattack range="4" offset="1.5707963268" />
               </runbehaviors>
-
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.1745329252" />
+                <ringattack range="4" offset="1.3962634016" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.3490658504" />
+                <ringattack range="4" offset="1.2217304764" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.5235987756" />
+                <ringattack range="4" offset="1.0471975512" />
+              </runbehaviors>
+              <cooldown time="200" />
+              <runbehaviors>
+                <ringattack range="4" offset="0.6981317008" />
+                <ringattack range="4" offset="0.8726646260" />
+              </runbehaviors>
+              <cooldown time="250" />
             </queuedbehavior>
           </if>
         </queuedbehavior>

@@ -1,0 +1,240 @@
+this flying brain beahviour is not how it should i've include the behaviour code that runs this xml flying brain eneterry
+i think it's meant to chase the player if in range that why the ifnot there then simpley wander not sure the cooldown time is meant to go down unless chashing maybe it is all working what are your thoughts
+
+  <enemy id="0x657" name="Flying Brain">
+    <behaviors>
+      <ifnot>
+        <chasing speed="6" range="7" acquireRange="4" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="500">
+        <ringattack range="5" count="12" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <entry chance="1" bag="CommonGodSoulBag" />
+        <entry chance="360">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.5" type="StatPotionLoot" stat="Wis" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+  
+  
+  
+  global function enemy_behavior_chasing(integer handle, atom speed, atom range, atom acquire_range, object target)
+    atom dist
+
+    dist = enemy_distance_to_player(handle)
+
+    if dist <= acquire_range then
+        enemy_list[handle][ENEMY_XML_STATE] = "chasing"
+    elsif dist > range then
+        enemy_list[handle][ENEMY_XML_STATE] = "idle"
+    end if
+
+    if equal(enemy_list[handle][ENEMY_XML_STATE], "chasing") then
+        enemy_move_towards(handle, player_x, player_y, speed)
+        return 1
+    end if
+
+    return 0
+end function
+  
+  
+  global function enemy_eval_behavior_node(integer handle, sequence node, sequence path)
+    sequence tag, children
+    atom now_time, delay, range, arc, lead, speed, offset
+    integer count, projectile_index
+    sequence s
+    object target
+
+    sequence child_path
+    integer did_any
+
+    if atom(node) then
+        return 0
+    end if
+
+    if length(node) = 0 then
+        return 0
+    end if
+
+    tag = behavior_node_tag(node)
+    now_time = current_time()
+    children = behavior_node_children(node)
+    did_any = 0
+    
+    projectile_index=-1
+    
+
+
+    --------------------------------------------------
+    -- CONTAINER NODES
+    --------------------------------------------------
+
+    if equal(tag, "behaviors") or equal(tag, "runbehaviors") then
+        for i = 1 to length(children) do
+            child_path = path & "." & sprint(i)
+            if enemy_eval_behavior_node(handle, children[i], child_path) then
+                did_any = 1
+            end if
+        end for
+        return did_any
+    end if
+
+    --------------------------------------------------
+    -- COOLDOWN
+    --------------------------------------------------
+
+    if equal(tag, "cooldown") then
+        delay = behavior_attr_number(node, "time", 0)
+
+        if now_time >= enemy_runtime_get_cooldown(handle, path) then
+            enemy_runtime_set_cooldown(handle, path, now_time + delay)
+
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) then
+                    did_any = 1
+                end if
+            end for
+
+            return did_any
+        end if
+
+        return 0
+    end if
+
+    --------------------------------------------------
+    -- ONCE
+    --------------------------------------------------
+
+    if equal(tag, "once") then
+        if enemy_runtime_get_once(handle, path) = 0 then
+            enemy_runtime_set_once(handle, path, 1)
+
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) then
+                    did_any = 1
+                end if
+            end for
+
+            return did_any
+        end if
+
+        return 0
+    end if
+
+    --------------------------------------------------
+    -- IFNOT (fallback logic)
+    --------------------------------------------------
+
+    if equal(tag, "ifnot") then
+        if length(children) >= 1 then
+            if enemy_eval_behavior_node(handle, children[1], path & ".1") = 0 then
+                if length(children) >= 2 then
+                    return enemy_eval_behavior_node(handle, children[2], path & ".2")
+                end if
+                return 0
+            else
+                return 1
+            end if
+        end if
+        return 0
+    end if
+
+    --------------------------------------------------
+    -- ACTION NODES
+    --------------------------------------------------
+
+    if equal(tag, "simplewandering") then
+        speed = behavior_attr_number(node, "speed", enemy_list[handle][ENEMY_SPEED])
+        return enemy_behavior_simplewandering(handle, speed)
+    end if
+
+    if equal(tag, "chasing") then
+        speed = behavior_attr_number(node, "speed", enemy_list[handle][ENEMY_SPEED])
+        range = behavior_attr_number(node, "range", 8)
+        target = behavior_attr(node, "target")
+        return enemy_behavior_chasing(handle, speed, range, range, target)
+    end if
+    
+    
+    
+     
+    if equal(tag, "ringattack") then
+        range = behavior_attr_number(node, "range", 8)
+        count = behavior_attr_int(node, "count", 1)
+        
+
+        return  enemy_behavior_ringattack(handle, count, 0, 1)
+    end if
+    
+    if equal(tag, "simpleattack") then
+        range = behavior_attr_number(node, "range", 8)
+
+
+        return enemy_behavior_multiattack(handle, range, 0, 1, 0, 1)
+    end if
+
+    if equal(tag, "multiattack") then
+        range = behavior_attr_number(node, "range", 8)
+        arc = behavior_attr_number(node, "arc", 0)
+        count = behavior_attr_int(node, "count", 1)
+        offset = behavior_attr_number(node, "offset", 0)
+        projectile_index = behavior_attr_int(node, "projectileIndex", -1)
+        
+
+        return enemy_behavior_multiattack(handle, range, arc, count, offset, projectile_index)
+    end if
+
+    if equal(tag, "predictiveattack") then
+        range = behavior_attr_number(node, "range", 8)
+        lead = behavior_attr_number(node, "lead", 1)
+        projectile_index = behavior_attr_int(node, "projectileIndex", -1)
+        
+
+        return enemy_behavior_predictiveattack(handle, range, lead, projectile_index)
+    end if
+    
+    
+
+    if equal(tag, "predictivemultiattack") then
+        range = behavior_attr_number(node, "range", 8)
+        arc = behavior_attr_number(node, "arc", 0)
+        count = behavior_attr_int(node, "count", 1)
+        lead = behavior_attr_number(node, "lead", 1)
+        projectile_index = behavior_attr_int(node, "projectileIndex", -1)
+        
+
+        
+        
+        return enemy_behavior_predictivemultiattack(handle, range, arc, count, lead, projectile_index)
+    end if
+    
+
+
+    if equal(tag, "state") then
+        s = behavior_attr_string(node, "name", "")
+        if equal(s, enemy_list[handle][ENEMY_XML_STATE]) then
+            for i = 1 to length(children) do
+                child_path = path & "." & sprint(i)
+                if enemy_eval_behavior_node(handle, children[i], child_path) then
+                    did_any = 1
+                end if
+            end for
+            return did_any
+        end if
+        return 0
+    end if
+
+    return 0
+end function
+  
+  
+  

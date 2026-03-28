@@ -2,7 +2,7 @@ global integer lighting_switch
 lighting_switch = 0
 global integer debug_draw_switch
 debug_draw_switch = 0
-global constant console_output_switch = 0
+global constant console_output_switch = 1
 global atom camera_x,camera_y,camera_z,camera_yaw
 camera_yaw=90
 camera_x=86
@@ -34,7 +34,9 @@ lootbag_enable_id=0
 global integer map_width,map_height
 
 
--- Enemy constants
+-----------------------------------------------------
+-- Enemy field indexes
+-----------------------------------------------------
 global constant ENEMY_X = 1
 global constant ENEMY_Y = 2
 global constant ENEMY_HEALTH = 3
@@ -52,6 +54,11 @@ global constant ENEMY_START_X = 14
 global constant ENEMY_START_Y = 15
 global constant ENEMY_PROJECTILE = 16
 global constant ENEMY_MAXHEALTH = 17
+global constant ENEMY_TYPE = 18
+global constant ENEMY_XML_COOLDOWNS = 19
+global constant ENEMY_XML_ONCE = 20
+global constant ENEMY_XML_STATE = 21
+global constant ENEMY_DELTA_TIME = 22
 
 global sequence enemy_list
 
@@ -109,6 +116,9 @@ include enemybehaviorxml.ew
 
 enemy_behavior_load("enemy xml\\shoressand.xml")
 enemy_behavior_load("enemy xml\\mountain.xml")
+enemy_behavior_load("enemy xml\\oryx.xml")
+enemy_behavior_load("enemy xml\\midland.xml")
+
 
 
 --dump_all_behaviors_to_file("temp.txt")
@@ -364,11 +374,7 @@ procedure init()
 
 
         --new for equipment bitmaps
-        spr=spritesheet_new(texture_load("data\\lofiChar8x8.bmp"),8,8)
-        object_bitmaps=append(object_bitmaps,{"lofiChar8x8", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
-
-        spr=spritesheet_new(texture_load("data\\lofiChar28x8.bmp"),8,8)
-        object_bitmaps=append(object_bitmaps,{"lofiChar28x8", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+        
 
         spr=spritesheet_new(texture_load("data\\lofiObj.bmp"),8,8)
         object_bitmaps=append(object_bitmaps,{"lofiObj", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
@@ -427,6 +433,23 @@ procedure init()
        object_bitmaps=append(object_bitmaps,{"chars8x8rHero2", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
       
        
+       spr=spritesheet_new(texture_load("data\\lofiChar8x8.bmp"),8,8)
+        object_bitmaps=append(object_bitmaps,{"lofiChar8x8", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+        
+        spr=spritesheet_new(texture_load("data\\lofiChar16x8.bmp"),16,8)
+        object_bitmaps=append(object_bitmaps,{"lofiChar16x8", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+        
+         spr=spritesheet_new(texture_load("data\\lofiChar16x16.bmp"),16,16)
+        object_bitmaps=append(object_bitmaps,{"lofiChar16x16", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+
+        spr=spritesheet_new(texture_load("data\\lofiChar28x8.bmp"),8,8)
+        object_bitmaps=append(object_bitmaps,{"lofiChar28x8", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+       
+       spr=spritesheet_new(texture_load("data\\lofiChar216x8.bmp"),16,8)
+       object_bitmaps=append(object_bitmaps,{"lofiChar216x8", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
+       
+       spr=spritesheet_new(texture_load("data\\lofiChar216x16.bmp"),16,16)
+       object_bitmaps=append(object_bitmaps,{"lofiChar216x16", spr,spritesheet_list[spr][4],spritesheet_list[spr][5]})
        
 
         --new
@@ -489,140 +512,210 @@ end procedure
 
 
 
+function resolve_any_objectid(object v)
+    object ret
+    sequence s
+    integer t
+
+    if atom(v) then
+        return 0
+    end if
+
+    s = v
+    if length(s) = 0 then
+        return 0
+    end if
+
+    ret = value(s)
+    if sequence(ret) and length(ret) >= 2 then
+        if ret[1] = GET_SUCCESS then
+            return floor(ret[2])
+        end if
+    end if
+
+    t = object_type_from_name(s)
+    if t > 0 then
+        return t
+    end if
+
+    t = projectile_type_from_name(s)
+    if t > 0 then
+        return t
+    end if
+
+    --puts(1, "failed resolve_any_objectid " & s & "\n")
+    return 0
+end function
+
+
+
 procedure projectile_enemy_update_new()
-atom dist,period,theta
+    atom dist, period, theta
+    atom amplitude, frequency
+    sequence list, object_list
+    integer bullet_id, ctype, pindex
+    atom x, y, start_time, angle, elapsed_time, d, angle2
+    integer lifetime, speed
+    integer object_type, damage
+    sequence stats, nearby, enemy_dielist
+    integer found_solid, stype, light
+    atom a, b, c
+    atom dx, dy, dist2
 
-atom amplitude,frequency
+    enemy_dielist = {}
 
-sequence list,object_list
-integer bullet_id,ctype
-atom x,y,start_time,angle,elapsed_time,vec,modvec,d,angle2
-integer ehandle
-atom dx,dy,dist2,ex,ey
-integer lifetime,speed
+    list = projectile_enemy_get_list(projectilelist)
+    object_list = object_get_list(objectlist)
 
---collision
-integer object_type,damage
+    for j = 1 to length(list) do
+        if length(list[j]) then
+            x = list[j][projectile_enemy_x]
+            y = list[j][projectile_enemy_y]
+            angle = list[j][projectile_enemy_angle]
+            start_time = list[j][projectile_enemy_start_time]
+            bullet_id = list[j][projectile_enemy_bullet_id]
+            ctype = list[j][projectile_enemy_type]
+            light = list[j][projectile_enemy_light]
+            pindex = list[j][projectile_enemy_projectile_index]
+            
+            if pindex<=0 then
+              pindex=1
+            end if
 
-sequence stats,nearby ,enemy_dielist
+            angle2 = angle
+            angle = toRotmgAngle(angle)
+            
 
- 
 
-integer found_solid, stype,light
-atom a,b,c
-
-enemy_dielist={}
-
-    list=projectile_enemy_get_list(projectilelist)
-
-    object_list=object_get_list( objectlist )
-
-    for j=1 to length(list) do
-
-      if length(list[j]) then
-        x=list[j][projectile_enemy_x]
-        y=list[j][projectile_enemy_y]
-        angle=list[j][projectile_enemy_angle]
-        start_time=list[j][projectile_enemy_start_time]
-        bullet_id=list[j][projectile_enemy_bullet_id]
-        ctype=list[j][projectile_enemy_type]
-		light=list[j][projectile_enemy_light]
-		
-
-        angle2=angle
-        angle=toRotmgAngle(angle)
-		
-         
-        lifetime=real(object_delta(ctype, object_lifetime))
-        speed=real(object_delta(ctype, object_speed))
-		
-
-      	elapsed_time=current_time()-start_time
-      	if elapsed_time>=lifetime then
-		  
-      	  projectile_enemy_free(projectilelist,j)
-	    else
-	
-            dist = (elapsed_time / 1000.0) * (speed / 10.0)
-            if is_even(bullet_id) then
-              period=0
+            -- use projectile-specific lifetime/speed if available
+            if sequence(object_projectile_delta(ctype, pindex, object_projectile_lifetime)) then
+                lifetime = real(object_projectile_delta(ctype, pindex, object_projectile_lifetime))
+            elsif sequence(object_delta(ctype, object_lifetime)) then
+                lifetime = real(object_delta(ctype, object_lifetime))
             else
-              period=PI
+                lifetime = 1000
             end if
 
-            if sequence(object_delta(ctype,object_wavy)) then
-              theta = angle + (PI * 64) * sin(period + 6 * PI * (elapsed_time / 1000))
-              x += dist * cos(theta)
-              y += dist * sin(theta)
-            elsif sequence(object_delta(ctype,object_parametric)) then
-
-                theta = elapsed_time / lifetime * 2 * PI
-                a = sin(theta) --* (ProjectileId % 2 != 0 ? 1 : -1);
-                b = sin(theta * 2)-- * (ProjectileId % 4 < 2 ? 1 : -1);
-                c = sin(angle)
-                d = cos(angle)
-                x += (a * d - b * c) * 1
-                y += (a * c + b * d) * 1
+            if sequence(object_projectile_delta(ctype, pindex, object_projectile_speed)) then
+                speed = real(object_projectile_delta(ctype, pindex, object_projectile_speed))
+            elsif sequence(object_delta(ctype, object_speed)) then
+                speed = real(object_delta(ctype, object_speed))
             else
-              x += dist * cos(angle)
-              y += dist * sin(angle)
-              if sequence(object_delta(ctype,object_amplitude)) then
-                --puts(1,"amplitude\n")
-                amplitude=real(object_delta(ctype,object_amplitude))
-                frequency=real(object_delta(ctype,object_frequency))
-
-                d = amplitude * sin(period + elapsed_time / lifetime * frequency * 2 * PI)
-                x += d * cos(angle + PI / 2)
-                y += d * sin(angle + PI / 2)
-
-              end if
+                speed = 100
             end if
 
-          stype=real(object_projectile_delta(ctype, 1,object_projectile_ObjectId))
+            elapsed_time = current_time() - start_time
 
-          if sequence(object_projectile_delta(ctype, 1,object_projectile_size)) then
-            draw_spritesheet_floor_angle(x,y, real(object_projectile_delta(ctype, 1,object_projectile_size))/100 , projectile_delta_mod(stype,projectile_sprite), projectile_delta_mod(stype,projectile_indexx),(-angle2-(90+45))+180 )
+            if elapsed_time >= lifetime then
+                projectile_enemy_free(projectilelist, j)
+            else
+                dist = (elapsed_time / 1000.0) * (speed / 10.0)
 
-          else
-            draw_spritesheet_floor_angle(x,y, 1, projectile_delta_mod(stype,projectile_sprite), projectile_delta_mod(stype,projectile_indexx),(-angle2-(90+45))+180 )
-          end if
-		  
-		  
-		  
-          dx = x - player_x
-          dy = y - player_y
-          dist2 = dx*dx + dy*dy
+                if is_even(bullet_id) then
+                    period = 0
+                else
+                    period = PI
+                end if
 
-          if dist2 < 1 then  
-		 
-		    if sequence( object_delta(ctype, object_damage) ) then
-              damage=real(object_delta(ctype, object_damage))
-			  --puts(1,"damage"&sprint(damage)&"\n")
-			else
-			  damage=10
-			end if
-	    if player_unhitable=0 then		
-            player_health-=damage
+                if sequence(object_projectile_delta(ctype, pindex, object_projectile_wavy)) then
+                    theta = angle + (PI * 64) * sin(period + 6 * PI * (elapsed_time / 1000))
+                    x += dist * cos(theta)
+                    y += dist * sin(theta)
+
+                elsif sequence(object_projectile_delta(ctype, pindex, object_projectile_parametric)) then
+                    theta = elapsed_time / lifetime * 2 * PI
+                    a = sin(theta)
+                    b = sin(theta * 2)
+                    c = sin(angle)
+                    d = cos(angle)
+                    x += (a * d - b * c) * 1
+                    y += (a * c + b * d) * 1
+
+                else
+                    x += dist * cos(angle)
+                    y += dist * sin(angle)
+
+                    if sequence(object_projectile_delta(ctype, pindex, object_projectile_amplitude)) then
+                        amplitude = real(object_projectile_delta(ctype, pindex, object_projectile_amplitude))
+
+                        if sequence(object_projectile_delta(ctype, pindex, object_projectile_frequency)) then
+                            frequency = real(object_projectile_delta(ctype, pindex, object_projectile_frequency))
+                        else
+                            frequency = 1
+                        end if
+
+                        d = amplitude * sin(period + elapsed_time / lifetime * frequency * 2 * PI)
+                        x += d * cos(angle + PI / 2)
+                        y += d * sin(angle + PI / 2)
+                    end if
+                end if
+
+                -- save new position back to projectile
+                list[j][projectile_enemy_x] = x
+                list[j][projectile_enemy_y] = y
+
+               stype = resolve_any_objectid(object_projectile_delta(ctype, pindex, object_projectile_ObjectId))
+               --stype = resolve_projectile_objectid(object_projectile_delta(ctype, pindex, object_projectile_ObjectId)) 
+                --stype = resolve_object_type(object_projectile_delta(ctype, pindex, object_projectile_ObjectId))
+                --stype = real(object_projectile_delta(ctype, pindex, object_projectile_ObjectId))
+
+if stype <= 0 then
+    puts(1, "bad stype ctype=" & sprint(ctype) & " pindex=" & sprint(pindex) & "\n")
+else
+    if sequence(object_projectile_delta(ctype, pindex, object_projectile_size)) then
+        if projectile_delta_mod(stype, projectile_sprite) = 0 then
+        else
+            draw_spritesheet_floor_angle(
+                x,
+                y,
+                real(object_projectile_delta(ctype, pindex, object_projectile_size)) / 100,
+                projectile_delta_mod(stype, projectile_sprite),
+                projectile_delta_mod(stype, projectile_indexx),
+                (-angle2 - (90 + 45)) + 180
+            )
+        end if
+    else
+        draw_spritesheet_floor_angle(
+            x,
+            y,
+            1,
+            projectile_delta_mod(stype, projectile_sprite),
+            projectile_delta_mod(stype, projectile_indexx),
+            (-angle2 - (90 + 45)) + 180
+        )
+    end if
+end if
+
+
+
+                dx = x - player_x
+                dy = y - player_y
+                dist2 = dx * dx + dy * dy
+
+                if dist2 < 1 then
+                    if sequence(object_projectile_delta(ctype, pindex, object_projectile_damage)) then
+                        damage = real(object_projectile_delta(ctype, pindex, object_projectile_damage))
+                    elsif sequence(object_delta(ctype, object_damage)) then
+                        damage = real(object_delta(ctype, object_damage))
+                    else
+                        damage = 10
+                    end if
+
+                    if player_unhitable = 0 then
+                        player_health -= damage
+                    end if
+
+                    projectile_enemy_free(projectile_enemy_list, j)
+                end if
+
+                if walkable[floor(y)][floor(x)] = 0 then
+                    projectile_enemy_free(projectile_enemy_list, j)
+                end if
             end if
-            -- optional: mark projectile for deletion
-            projectile_enemy_free(projectile_enemy_list, j)
-		    
-		  end if
-		  
-			
-          
-          if walkable[floor(y)][floor(x)]=0  then
-            projectile_enemy_free(projectile_enemy_list, j)
-          end if
-
-      	end if
-
-      end if	
-
-
+        end if
     end for
 
-
+    --projectile_enemy_set_list(projectilelist, list)
 end procedure
 
 
@@ -1661,12 +1754,14 @@ gl_color4f({1, 1,1, 1})
    draw_health()
    
    
-   currentfont=font0
+   currentfont=font2
    draw_set_color(255,0,255)
                
    for i=1 to length(text_to_draw) do
-      --puts(1,text_to_draw[i][3]&"\n")
-      draw_text(text_to_draw[i][1]-camera_x,text_to_draw[i][2]-camera_y,text_to_draw[i][3]) 
+     if sequence (text_to_draw[i][3]) then
+      puts(1,text_to_draw[i][3]&"\n")
+      draw_text(text_to_draw[i][1]-player_x,text_to_draw[i][2]-player_y,text_to_draw[i][3]) 
+      end if
    end for
    
    
@@ -1755,7 +1850,7 @@ end if
 
     -- Sleep if the frame was too fast
     if deltatime < TARGET_FRAME_MS then
-      --usleep((TARGET_FRAME_MS - floor(deltatime)) )  -- convert ms → µs
+      usleep((TARGET_FRAME_MS - floor(deltatime)) )  -- convert ms → µs
     end if
 
    
@@ -1831,7 +1926,7 @@ frametime =current_time()
     player_unhitable_set=1
   end if
 
-  if player_health<=101 and equal(map_name,"nexus.wmap")!=1 then
+  if player_health<=101 and equal(map_name,"nexus.wmap")=1 then
    preworld_player_x=player_x
    preworld_player_y=player_y
    enemy_save_state()
@@ -1963,7 +2058,7 @@ else
     
     for i = 1 to length(nearby) do
         if length(nearby[i]) then
-            enemy_update(nearby[i][1])
+            enemy_update(nearby[i][1],deltatime)
         end if
     end for  
 	
@@ -2018,7 +2113,9 @@ end procedure
 
 --TERRAIN_MOUNTAINS_ENEMIES & 
 
-constant  enemy_type_list=  TERRAIN_NONE_ENEMIES & TERRAIN_SHORESAND_ENEMIES & TERRAIN_SHOREPLAINS_ENEMIES & TERRAIN_MIDFOREST_ENEMIES & TERRAIN_MIDPLAINS_ENEMIES & TERRAIN_MIDSAND_ENEMIES & TERRAIN_MOUNTAINS_ENEMIES
+--constant  enemy_type_list= TERRAIN_MOUNTAINS_ENEMIES --TERRAIN_NONE_ENEMIES 
+
+constant  enemy_type_list= TERRAIN_SHORESAND_ENEMIES & TERRAIN_SHOREPLAINS_ENEMIES & TERRAIN_MIDFOREST_ENEMIES & TERRAIN_MIDPLAINS_ENEMIES & TERRAIN_MIDSAND_ENEMIES & TERRAIN_MOUNTAINS_ENEMIES
 
 --constant  enemy_type_list=TERRAIN_NONE_ENEMIES
 
@@ -2030,6 +2127,9 @@ integer ret
    --puts(1,"create enemy "&name&"\n")
    --?(object_delta_mod(object_type_from_name(name),object_indexx))
    --?(object_delta_mod(object_type_from_name(name),object_indexx)*7)
+   
+--ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(object_type_from_name(name),object_sprite),(object_delta_mod(object_type_from_name(name),object_indexx)*7), object_type_from_name(name) )
+
 ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(object_type_from_name(name),object_sprite),(object_delta_mod(object_type_from_name(name),object_indexx)*7), object_type_from_name(name) )
 
 end procedure
@@ -2047,9 +2147,14 @@ procedure create_random_enemy_at_random_position()
 integer rnd,ret,index
 rnd=rand(length(enemy_type_list))
 
+
+
 --create_enemy_from_name(enemy_type_list[rnd],rand(512)+512, rand(512)+512)
 
 create_enemy_from_id(enemy_type_list[rnd],rand(512)+512, rand(512)+512)
+
+--?object_delta_mod(enemy_type_list[rnd],object_animated)
+--?object_delta_mod(enemy_type_list[rnd],object_texture)
 
 end procedure
 
@@ -2073,9 +2178,8 @@ integer ret,index
           key_add(keycode)
           
           if key_check('P')  then
-                 for i=1 to 2000 do
-                   --ret=enemy_new(rand(512)+512, rand(512)+512, 100.0, 0.1, 5,rand(220), #910) 
-                   --create_enemy()
+                 for i=1 to 1600 do
+
                    create_random_enemy_at_random_position()
 		end for	
 			
@@ -2083,18 +2187,23 @@ integer ret,index
 		    if key_check(' ')  then
 		    
 		    
-		    
-		   create_enemy_from_name("Pirate", camera_x,camera_y)
-		   create_enemy_from_name("Piratess", camera_x+2,camera_y)
+		   --ENEMY_ORYX_THE_MAD_GOD_2
+		   --create_enemy_from_name("Oryx the Mad God 2", camera_x,camera_y)
+		   --create_enemy_from_name("Piratess", camera_x+2,camera_y)
 		   create_enemy_from_name("Snake", camera_x+4,camera_y)
-		   --create_enemy_from_name("Poison Scorpion", camera_x+6,camera_y)
+		   create_enemy_from_name("Poison Scorpion", camera_x+6,camera_y)
 		   create_enemy_from_name("Bandit Leader", camera_x+8,camera_y)
 		   create_enemy_from_name("Bandit", camera_x+10,camera_y)
 		   
 		   create_enemy_from_name("Red Gelatinous Cube", camera_x,camera_y+4)
 		   create_enemy_from_name("Purple Gelatinous Cube", camera_x,camera_y+6)
 		   create_enemy_from_name("Green Gelatinous Cube", camera_x,camera_y+8)
-
+		   
+		   --create_enemy_from_name("Djinn", camera_x,camera_y+4)
+		   --create_enemy_from_name("White Demon", camera_x,camera_y+4)
+		   --create_enemy_from_name("Sprite God", camera_x,camera_y+4)
+		   
+		   
 		  
 			
 

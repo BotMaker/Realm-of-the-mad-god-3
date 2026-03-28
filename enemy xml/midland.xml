@@ -1,0 +1,1099 @@
+<enemies>
+
+  <enemy id="0x624" name="Fire Sprite">
+    <behaviors>
+      <simplewandering speed="15" />
+      <cooldown time="300">
+        <multiattack range="10" arc="0.1221730476" count="2" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="TierLoot" tier="5" itemType="Weapon" />
+          <item chance="0.03" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x625" name="Ice Sprite">
+    <behaviors>
+      <simplewandering speed="15" />
+      <cooldown time="1000">
+        <multiattack range="10" arc="0.1221730476" count="3" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="TierLoot" tier="2" itemType="Ability" />
+          <item chance="0.03" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x626" name="Magic Sprite">
+    <behaviors>
+      <simplewandering speed="15" />
+      <cooldown time="1000">
+        <multiattack range="10" arc="0.1221730476" count="4" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="TierLoot" tier="5" itemType="Armor" />
+          <item chance="0.03" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x62c" name="Orc King">
+    <behaviors>
+      <ifnot>
+        <once>
+          <runbehaviors>
+            <spawnminionimmediate type="0x629" count="2" minRange="1" maxRange="3" />
+            <spawnminionimmediate type="0x62a" count="2" minRange="1" maxRange="2" />
+            <spawnminionimmediate type="0x62b" count="2" minRange="1" maxRange="2" />
+          </runbehaviors>
+        </once>
+        <rand>
+          <chasing speed="12" range="10" acquireRange="1" target="null" />
+          <simplewandering speed="4" />
+        </rand>
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="3" />
+      </cooldown>
+      <rand>
+        <reproduce type="0x629" density="3" />
+        <reproduce type="0x62a" density="2" />
+        <reproduce type="0x62b" density="2" />
+      </rand>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="3" threshold="0" bags="8">
+          <item chance="0.20" type="TierLoot" tier="3" itemType="Weapon" />
+          <item chance="0.10" type="TierLoot" tier="4" itemType="Weapon" />
+          <item chance="0.05" type="TierLoot" tier="5" itemType="Weapon" />
+          <item chance="0.20" type="TierLoot" tier="3" itemType="Armor" />
+          <item chance="0.10" type="TierLoot" tier="4" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="5" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="2" itemType="Ability" />
+          <item chance="0.03" type="HpPotionLoot" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.01" type="TierLoot" tier="2" itemType="Ring" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x629" name="Orc Warrior">
+    <behaviors>
+      <ifnot>
+        <chasing speed="12" range="10" acquireRange="1" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="3" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x62a" name="Orc Mage">
+    <behaviors>
+      <ifnot>
+        <circling speed="2" radius="10" acquireRange="12" target="0x62b" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="1000">
+        <multiattack range="10" arc="0.2617993878" count="3" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x62b" name="Orc Queen">
+    <behaviors>
+      <ifnot>
+        <chasing speed="12" range="10" acquireRange="7" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="500">
+        <heal range="10" amount="100" target="0x62c" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x62f" name="Earth Golem">
+    <behaviors>
+      <ifnot>
+        <chasing speed="8" range="10" acquireRange="1" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="1000">
+          <multiattack range="3" arc="0.1221730476" count="2" />
+        </cooldown>
+        <once>
+          <golemsatellitespawn />
+        </once>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.01" type="TierLoot" tier="2" itemType="Ring" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x631" name="Paper Golem">
+    <behaviors>
+      <ifnot>
+        <chasing speed="8" range="10" acquireRange="1" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="1000">
+          <simpleattack range="10" />
+        </cooldown>
+        <once>
+          <golemsatellitespawn />
+        </once>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.03" type="TierLoot" tier="5" itemType="Weapon" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0205" name="Pink Blob">
+    <behaviors>
+      <ifnot>
+        <chasing speed="8" range="15" acquireRange="5" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="1000">
+        <multiattack range="6" arc="0.2617993878" count="3" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x020d" name="Gray Blob">
+    <behaviors>
+      <queuedbehavior>
+        <charge speed="25" range="15" target="null" />
+        <timed time="5000">
+          <simplewandering speed="2" />
+        </timed>
+      </queuedbehavior>
+    </behaviors>
+    <conditionalbehaviors>
+      <grayblob />
+    </conditionalbehaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.005" type="ItemLoot" item="Magic Mushroom" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x020e" name="Big Green Slime">
+    <behaviors>
+      <simplewandering speed="4" />
+      <cooldown time="500">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+    <conditionalbehaviors>
+      <deathtransmute type="0x020f" min="3" max="5" />
+    </conditionalbehaviors>
+  </enemy>
+
+  <enemy id="0x020f" name="Little Green Slime">
+    <behaviors>
+      <smoothwandering speed="2" radius="4" />
+      <cooldown time="500">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0947" name="Wasp Queen">
+    <behaviors>
+      <ifnot>
+        <once>
+          <runbehaviors>
+            <spawnminionimmediate type="0x0949" count="2" minRange="1" maxRange="2" />
+            <spawnminionimmediate type="0x0948" count="2" minRange="2" maxRange="5" />
+          </runbehaviors>
+        </once>
+        <smoothwandering speed="1" radius="4" />
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="10" />
+      </cooldown>
+      <rand>
+        <reproduce type="0x0949" density="2" />
+        <reproduce type="0x0948" density="5" />
+      </rand>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x0948" name="Worker Wasp">
+    <behaviors>
+      <ifnot>
+        <circling speed="2" radius="10" acquireRange="8" target="0x0947" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x0949" name="Warrior Wasp">
+    <behaviors>
+      <ifnot>
+        <circling speed="2" radius="10" acquireRange="8" target="0x0947" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.10" type="TierLoot" tier="3" itemType="Weapon" />
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Weapon" />
+          <item chance="0.10" type="TierLoot" tier="3" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Armor" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="2" threshold="0" bags="8">
+            <item chance="0.03" type="TierLoot" tier="6" itemType="Weapon" />
+            <item chance="0.03" type="TierLoot" tier="6" itemType="Armor" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0950" name="Shambling Sludge">
+    <behaviors>
+      <smoothwandering speed="2" radius="4" />
+      <runbehaviors>
+        <shamblingspawn />
+        <cooldown time="2000">
+          <simpleattack range="10" />
+        </cooldown>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.10" type="TierLoot" tier="3" itemType="Weapon" />
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Weapon" />
+          <item chance="0.10" type="TierLoot" tier="3" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Armor" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="2" threshold="0" bags="8">
+            <item chance="0.03" type="TierLoot" tier="6" itemType="Weapon" />
+            <item chance="0.03" type="TierLoot" tier="6" itemType="Armor" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0951" name="Sludget">
+    <behaviors>
+      <queuedbehavior>
+        <timed time="1000">
+          <simplewandering speed="4" />
+        </timed>
+        <charge speed="10" range="5" target="null" />
+      </queuedbehavior>
+      <cooldown time="500">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0955" name="Swarm">
+    <behaviors>
+      <if>
+        <isentitynotpresent range="8" target="null" />
+        <charge speed="15" range="7" target="null" />
+        <timed time="3500">
+          <circling speed="5" radius="10" acquireRange="20" target="null" />
+        </timed>
+      </if>
+      <rand>
+        <cooldown time="500">
+          <ringattack range="5" count="10" />
+        </cooldown>
+        <cooldown time="500">
+          <ringattack range="5" count="10" />
+        </cooldown>
+        <cooldown time="500">
+          <ringattack range="5" count="10" />
+        </cooldown>
+        <cooldown time="1000">
+          <simpleattack range="10" />
+        </cooldown>
+      </rand>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.15" type="TierLoot" tier="3" itemType="Weapon" />
+          <item chance="0.15" type="TierLoot" tier="3" itemType="Armor" />
+          <item chance="0.15" type="TierLoot" tier="1" itemType="Ability" />
+          <item chance="0.15" type="TierLoot" tier="1" itemType="Ring" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0204" name="Black Bat">
+    <behaviors>
+      <queuedbehavior>
+        <charge speed="20" range="10" target="null" />
+        <timed time="5000">
+          <simplewandering speed="2" />
+        </timed>
+      </queuedbehavior>
+      <cooldown time="1000">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.01" type="TierLoot" tier="2" itemType="Armor" />
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0202" name="Red Spider">
+    <behaviors>
+      <simplewandering speed="8" />
+      <cooldown time="1000">
+        <simpleattack range="9" />
+      </cooldown>
+      <reproduce type="0x0202" density="3" cooldown="45000" range="15" />
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x61f" name="Dwarf King">
+    <behaviors>
+      <ifnot>
+        <once>
+          <runbehaviors>
+            <spawnminionimmediate type="0x61e" count="2" minRange="1" maxRange="2" />
+            <spawnminionimmediate type="0x61d" count="2" minRange="1" maxRange="2" />
+            <spawnminionimmediate type="0x61c" count="2" minRange="1" maxRange="3" />
+          </runbehaviors>
+        </once>
+        <queuedbehavior>
+          <timed time="2500">
+            <chasing speed="10" range="15" acquireRange="1" target="null" />
+          </timed>
+          <timed time="2500">
+            <false>
+              <simplewandering speed="4" />
+            </false>
+          </timed>
+          <true>
+            <randomtaunt probability="0.01" text="You'll taste my axe!" />
+          </true>
+        </queuedbehavior>
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="3" />
+      </cooldown>
+      <rand>
+        <reproduce type="0x61e" density="2" />
+        <reproduce type="0x61d" density="2" />
+        <reproduce type="0x61c" density="3" />
+      </rand>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.10" type="TierLoot" tier="3" itemType="Weapon" />
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Weapon" />
+          <item chance="0.10" type="TierLoot" tier="3" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="1" itemType="Ring" />
+          <item chance="0.05" type="TierLoot" tier="1" itemType="Ability" />
+          <item chance="0.03" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x61e" name="Dwarf Veteran">
+    <behaviors>
+      <ifnot>
+        <chasing speed="10" range="10" acquireRange="1" target="null" />
+        <ifnot>
+          <chasing speed="10" range="10" acquireRange="3" target="0x61f" />
+          <simplewandering speed="4" />
+        </ifnot>
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="3" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x61d" name="Dwarf Mage">
+    <behaviors>
+      <ifnot>
+        <chasing speed="10" range="10" acquireRange="4" target="null" />
+        <ifnot>
+          <chasing speed="12" range="10" acquireRange="10" target="0x61f" />
+          <simplewandering speed="4" />
+        </ifnot>
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x61c" name="Dwarf Axebearer">
+    <behaviors>
+      <ifnot>
+        <chasing speed="10" range="10" acquireRange="1" target="null" />
+        <ifnot>
+          <chasing speed="10" range="10" acquireRange="3" target="0x61f" />
+          <simplewandering speed="4" />
+        </ifnot>
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="3" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x637" name="Werelion">
+    <behaviors>
+      <ifnot>
+        <once>
+          <runbehaviors>
+            <spawnminionimmediate type="0x635" count="2" minRange="1" maxRange="3" />
+            <spawnminionimmediate type="0x636" count="2" minRange="1" maxRange="2" />
+            <spawnminionimmediate type="0x639" count="2" minRange="1" maxRange="2" />
+          </runbehaviors>
+        </once>
+        <ifnot>
+          <chasing speed="10" range="10" acquireRange="3" target="null" />
+          <simplewandering speed="4" />
+        </ifnot>
+      </ifnot>
+      <queuedbehavior>
+        <cooldown time="1000">
+          <multiattack range="10" arc="0.1221730476" count="3" projectileIndex="0" />
+        </cooldown>
+        <cooldown time="1000">
+          <simpleattack range="10" projectileIndex="1" />
+        </cooldown>
+      </queuedbehavior>
+      <rand>
+        <reproduce type="0x635" density="3" />
+        <reproduce type="0x636" density="2" />
+        <reproduce type="0x639" density="2" />
+      </rand>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.10" type="TierLoot" tier="3" itemType="Weapon" />
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Weapon" />
+          <item chance="0.03" type="TierLoot" tier="5" itemType="Weapon" />
+          <item chance="0.10" type="TierLoot" tier="3" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Armor" />
+          <item chance="0.03" type="TierLoot" tier="5" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="1" itemType="Ring" />
+          <item chance="0.05" type="TierLoot" tier="1" itemType="Ability" />
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x635" name="Weretiger">
+    <behaviors>
+      <ifnot>
+        <rand>
+          <chasing speed="10" range="10" acquireRange="2" target="null" />
+          <circling speed="3" radius="10" acquireRange="10" target="null" />
+        </rand>
+        <ifnot>
+          <chasing speed="10" range="10" acquireRange="3" target="0x637" />
+          <simplewandering speed="4" />
+        </ifnot>
+      </ifnot>
+      <cooldown time="1000">
+        <multiattack range="10" arc="0.1221730476" count="3" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x636" name="Wereleopard">
+    <behaviors>
+      <ifnot>
+        <rand>
+          <chasing speed="10" range="10" acquireRange="2" target="null" />
+          <circling speed="3" radius="10" acquireRange="10" target="null" />
+        </rand>
+        <ifnot>
+          <chasing speed="10" range="10" acquireRange="3" target="0x637" />
+          <simplewandering speed="4" />
+        </ifnot>
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x639" name="Werepanther">
+    <behaviors>
+      <ifnot>
+        <queuedbehavior>
+          <timed time="7000">
+            <false>
+              <chasing speed="10" range="10" acquireRange="2" target="null" />
+            </false>
+          </timed>
+          <planewalk speed="5" target="null" />
+        </queuedbehavior>
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x62d" name="Metal Golem">
+    <behaviors>
+      <ifnot>
+        <chasing speed="8" range="10" acquireRange="1" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="1000">
+          <simpleattack range="10" />
+        </cooldown>
+        <once>
+          <golemsatellitespawn />
+        </once>
+      </runbehaviors>
+      <reproduce type="0x62d" density="3" />
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="TierLoot" tier="5" itemType="Weapon" />
+          <item chance="0.03" type="HpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x62e" name="Clockwork Golem">
+    <behaviors>
+      <ifnot>
+        <chasing speed="8" range="10" acquireRange="1" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="2000">
+          <simpleattack range="10" />
+        </cooldown>
+        <once>
+          <golemsatellitespawn />
+        </once>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="TierLoot" tier="5" itemType="Armor" />
+          <item chance="0.03" type="HpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0945" name="Horned Drake">
+    <behaviors>
+      <ifnot>
+        <once>
+          <spawnminionimmediate type="0x0946" count="1" minRange="1" maxRange="1" />
+        </once>
+        <rand>
+          <chasing speed="4" range="10" acquireRange="1" target="null" />
+          <simplewandering speed="4" />
+        </rand>
+      </ifnot>
+      <queuedbehavior>
+        <timed time="2000">
+          <cooldown time="500">
+            <multiattack range="10" arc="0.6981317008" count="3" />
+          </cooldown>
+        </timed>
+        <timed time="900">
+          <cooldown time="800">
+            <simpleattack range="10" />
+          </cooldown>
+        </timed>
+      </queuedbehavior>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.10" type="TierLoot" tier="5" itemType="Weapon" />
+          <item chance="0.10" type="TierLoot" tier="5" itemType="Armor" />
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+          <item chance="0.05" type="TierLoot" tier="2" itemType="Ability" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="2" threshold="0" bags="8">
+            <item chance="0.05" type="TierLoot" tier="6" itemType="Weapon" />
+            <item chance="0.05" type="TierLoot" tier="6" itemType="Armor" />
+            <item chance="0.05" type="TierLoot" tier="2" itemType="Ring" />
+            <item chance="0.03" type="TierLoot" tier="3" itemType="Ring" />
+            <item chance="0.03" type="TierLoot" tier="3" itemType="Ability" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0946" name="Drake Baby">
+    <behaviors>
+      <ifnot>
+        <chasing speed="6" range="10" acquireRange="1" target="0x0945" />
+        <if>
+          <escaping speed="6" range="16" dangerRadius="400" target="null" />
+          <randomtaunt probability="0.0001" text="Awwwk! Awwwk!" />
+          <simplewandering speed="4" />
+        </if>
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x6c6" name="Nomadic Shaman">
+    <behaviors>
+      <ifnot>
+        <chasing speed="4" range="10" acquireRange="2" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <queuedbehavior>
+        <timed time="1000">
+          <cooldown time="400">
+            <multiattack range="10" arc="0.2617993878" count="3" projectileIndex="0" />
+          </cooldown>
+        </timed>
+        <timed time="1000">
+          <cooldown time="400">
+            <simpleattack range="10" projectileIndex="1" />
+          </cooldown>
+        </timed>
+      </queuedbehavior>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.10" type="TierLoot" tier="4" itemType="Weapon" />
+          <item chance="0.05" type="TierLoot" tier="3" itemType="Weapon" />
+          <item chance="0.10" type="TierLoot" tier="4" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="3" itemType="Armor" />
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x6c5" name="Sand Phantom">
+    <behaviors>
+      <ifnot>
+        <chasing speed="4" range="10" acquireRange="2" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="500">
+          <simpleattack range="10" />
+        </cooldown>
+        <queuedbehavior>
+          <cooldown time="5000" />
+          <transmute type="0x7f22" />
+        </queuedbehavior>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x7f22" name="Sand Phantom Wisp">
+    <behaviors>
+      <ifnot>
+        <chasing speed="4" range="10" acquireRange="2" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <runbehaviors>
+        <cooldown time="500">
+          <simpleattack range="10" />
+        </cooldown>
+        <queuedbehavior>
+          <cooldown time="10000" />
+          <transmute type="0x6c5" />
+        </queuedbehavior>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="HpPotionLoot" />
+          <item chance="0.02" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x632" name="Fire Golem">
+    <behaviors>
+      <ifnot>
+        <chasing speed="10" range="7" acquireRange="1" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <runbehaviors>
+        <rand>
+          <cooldown time="1000">
+            <multiattack range="10" arc="0.2617993878" count="3" projectileIndex="0" />
+          </cooldown>
+          <cooldown time="1000">
+            <simpleattack range="10" projectileIndex="1" />
+          </cooldown>
+        </rand>
+        <once>
+          <golemsatellitespawn />
+        </once>
+      </runbehaviors>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Armor" />
+          <item chance="0.03" type="MpPotionLoot" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x633" name="Darkness Golem">
+    <behaviors>
+      <ifnot>
+        <chasing speed="10" range="7" acquireRange="1" target="null" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <queuedbehavior>
+        <once>
+          <golemsatellitespawn />
+        </once>
+        <timed time="5000">
+          <runbehaviors>
+            <flashing period="250" color="0xffffffff" />
+            <cooldown time="250">
+              <simpleattack range="10" projectileIndex="0" />
+            </cooldown>
+          </runbehaviors>
+        </timed>
+        <timed time="5000">
+          <cooldown time="500">
+            <simpleattack range="10" projectileIndex="1" />
+          </cooldown>
+        </timed>
+      </queuedbehavior>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.03" type="MpPotionLoot" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.05" type="TierLoot" tier="4" itemType="Armor" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0952" name="Great Lizard">
+    <behaviors>
+      <ifnot>
+        <rand>
+          <chasing speed="10" range="10" acquireRange="2" target="null" />
+          <simplewandering speed="4" />
+        </rand>
+        <simplewandering speed="4" />
+      </ifnot>
+      <queuedbehavior>
+        <timed time="5000">
+          <cooldown time="500">
+            <rand>
+              <simpleattack range="10" projectileIndex="0" />
+              <multiattack range="10" arc="0.1221730476" count="2" projectileIndex="1" />
+            </rand>
+          </cooldown>
+        </timed>
+        <timed time="2100">
+          <cooldown time="250">
+            <ringattack range="20" projectileIndex="0" />
+          </cooldown>
+        </timed>
+        <planewalk speed="8" target="null" />
+        <cooldown time="1000" />
+      </queuedbehavior>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.05" type="TierLoot" tier="5" itemType="Weapon" />
+          <item chance="0.05" type="TierLoot" tier="5" itemType="Armor" />
+        </lootdef>
+        <entry chance="1">
+          <lootdef min="0" max="1" threshold="0" bags="8">
+            <item chance="0.03" type="TierLoot" tier="2" itemType="Ring" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x622" name="Demon Warg">
+    <behaviors>
+      <ifnot>
+        <chasing speed="4" range="10" acquireRange="2" target="0x623" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="500">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x620" name="Tawny Warg">
+    <behaviors>
+      <ifnot>
+        <chasing speed="4" range="10" acquireRange="2" target="0x623" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="500">
+        <simpleattack range="10" />
+      </cooldown>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x623" name="Desert Werewolf">
+    <behaviors>
+      <ifnot>
+        <once>
+          <runbehaviors>
+            <spawnminionimmediate type="0x622" count="2" minRange="1" maxRange="3" />
+            <spawnminionimmediate type="0x620" count="2" minRange="1" maxRange="3" />
+          </runbehaviors>
+        </once>
+        <ifnot>
+          <chasing speed="4" range="10" acquireRange="2" target="0x623" />
+          <simplewandering speed="4" />
+        </ifnot>
+      </ifnot>
+
+      <hplesser hp="200">
+        <runbehaviors>
+          <once>
+            <setsize size="150" />
+          </once>
+          <once>
+            <simpletaunt text="GRRRRAAGH!" />
+          </once>
+          <flashing period="500" color="0xffff0000" />
+          <cooldown time="250">
+            <simpleattack range="10" projectileIndex="1" />
+          </cooldown>
+        </runbehaviors>
+        <cooldown time="500">
+          <simpleattack range="10" />
+        </cooldown>
+      </hplesser>
+
+      <rand>
+        <reproduce type="0x622" density="3" />
+        <reproduce type="0x620" density="3" />
+      </rand>
+    </behaviors>
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="2" threshold="0" bags="8">
+          <item chance="0.10" type="TierLoot" tier="3" itemType="Weapon" />
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Weapon" />
+          <item chance="0.10" type="TierLoot" tier="3" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="4" itemType="Armor" />
+          <item chance="0.05" type="TierLoot" tier="1" itemType="Ability" />
+          <item chance="0.05" type="TierLoot" tier="1" itemType="Ring" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+</enemies>

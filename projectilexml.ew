@@ -235,16 +235,25 @@ global function projectile_delta_mod( integer index, integer id )
 end function
 
 
+
 global function projectile_type_from_name(sequence name)
-  for i=1 to length(object_list) do
-    if sequence(projectile_delta(i,projectile_id)) then
-      if equal(projectile_delta(i,projectile_id),name) then
-        return i
-      end if
-    end if
-  end for
-  puts(1,name)
+    for i = 1 to length(object_list) do
+        if sequence(projectile_delta(i, projectile_id)) then
+            if equal(projectile_delta(i, projectile_id), name) then
+                return i
+            end if
+        end if
+    end for
+
+    --puts(1, "not found " & name & "\n")
+    return -1
 end function
+
+global procedure projectile_debug_find_name(sequence name)
+    integer t
+    t = projectile_type_from_name(name)
+    puts(1, "projectile lookup [" & name & "] = " & sprint(t) & "\n")
+end procedure
 
 
 global procedure projectile_set_sprite(sequence data)
@@ -266,7 +275,10 @@ global procedure projectile_set_sprite(sequence data)
   end for
 
 
- 
+--projectile_debug_find_name("Green Star")
+--projectile_debug_find_name("Blue Star")
+--projectile_debug_find_name("Grey Star")
+--projectile_debug_find_name("Blade")
 end procedure
 
 

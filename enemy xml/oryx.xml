@@ -1,0 +1,258 @@
+<enemies>
+
+  <enemy id="0x0932" name="Oryx the Mad God 2">
+    <behaviors>
+
+      <runbehaviors>
+        <state name="idle">
+          <cooldown time="1000">
+            <multiattack range="25" arc="0.1745329252" count="3" offset="0" projectileIndex="1" />
+          </cooldown>
+          <cooldown time="1000">
+            <multiattack range="25" arc="0.1745329252" count="3" offset="0" projectileIndex="2" />
+          </cooldown>
+          <cooldown time="1000">
+            <multiattack range="25" arc="0.1745329252" count="2" offset="0" projectileIndex="3" />
+          </cooldown>
+          <cooldown time="1000">
+            <multiattack range="25" arc="0.1745329252" count="2" offset="0" projectileIndex="5" />
+          </cooldown>
+          <cooldown time="1000">
+            <multiattack range="25" arc="0.1745329252" count="3" offset="0" projectileIndex="6" />
+          </cooldown>
+          <cooldown time="6000">
+            <simpletaunt text="Puny mortals! My {HP} HP will annihilate you!" />
+          </cooldown>
+        </state>
+      </runbehaviors>
+
+      <runbehaviors>
+        <state name="idle">
+
+          <hpgreaterequal hp="15000">
+            <runbehaviors>
+              <maintaindist speed="1" radius="5" acquireRange="15" target="null" />
+              <cooldown time="3600">
+                <multiattack range="25" arc="0.7853981634" count="8" offset="0" projectileIndex="0" />
+              </cooldown>
+              <spawnminion type="0x0944" radius="2" count="4" cooldown="12000" initialSpawn="12000" />
+            </runbehaviors>
+          </hpgreaterequal>
+
+          <hplesserpercent percent="0.2">
+            <runbehaviors>
+              <chasing speed="3" range="25" acquireRange="2" target="null" />
+              <cooldown time="2200">
+                <multiattack range="25" arc="0.7853981634" count="8" offset="0" projectileIndex="0" />
+              </cooldown>
+              <once>
+                <setconditioneffect effect="Invulnerable" />
+              </once>
+              <once>
+                <simpletaunt text="Can't... keep... henchmen... alive... anymore! ARGHHH!!!" />
+              </once>
+              <cooldown time="8000">
+                <once>
+                  <unsetconditioneffect effect="Invulnerable" />
+                </once>
+              </cooldown>
+              <cooldown time="8000">
+                <once>
+                  <ringattack count="30" offset="0" radius="2" projectileIndex="7" />
+                </once>
+              </cooldown>
+              <cooldown time="8000">
+                <once>
+                  <ringattack count="30" projectileIndex="8" />
+                </once>
+              </cooldown>
+              <cooldown time="1000">
+                <tossenemy angle="random_0_179_deg" range="7" type="0x0de2" />
+              </cooldown>
+            </runbehaviors>
+          </hplesserpercent>
+
+        </state>
+      </runbehaviors>
+
+      <runbehaviors>
+        <state name="dance">
+          <once>
+            <simpletaunt text="I will dance for you!" />
+          </once>
+          <cooldown time="500">
+            <predictivemultiattack range="25" arc="0.1745329252" count="3" lead="5" projectileIndex="1" />
+          </cooldown>
+          <cooldown time="500">
+            <predictivemultiattack range="25" arc="0.1745329252" count="3" lead="5" projectileIndex="2" />
+          </cooldown>
+          <cooldown time="500">
+            <predictivemultiattack range="25" arc="0.1745329252" count="2" lead="5" projectileIndex="3" />
+          </cooldown>
+          <cooldown time="500">
+            <predictivemultiattack range="25" arc="0.1745329252" count="3" lead="5" projectileIndex="4" />
+          </cooldown>
+          <cooldown time="500">
+            <predictivemultiattack range="25" arc="0.1745329252" count="2" lead="5" projectileIndex="5" />
+          </cooldown>
+          <cooldown time="500">
+            <predictivemultiattack range="25" arc="0.1745329252" count="3" lead="5" projectileIndex="6" />
+          </cooldown>
+        </state>
+      </runbehaviors>
+
+    </behaviors>
+
+    <loot>
+      <lootbehavior>
+        <entry chance="100">
+          <lootdef min="0" max="5" threshold="0" bags="8">
+            <item chance="0.001" type="TierLoot" tier="8" itemType="Ability" />
+            <item chance="0.005" type="TierLoot" tier="7" itemType="Ability" />
+            <item chance="0.05" type="TierLoot" tier="6" itemType="Ability" />
+
+            <item chance="0.001" type="TierLoot" tier="15" itemType="Armor" />
+            <item chance="0.005" type="TierLoot" tier="14" itemType="Armor" />
+            <item chance="0.05" type="TierLoot" tier="13" itemType="Armor" />
+
+            <item chance="0.001" type="TierLoot" tier="14" itemType="Weapon" />
+            <item chance="0.005" type="TierLoot" tier="13" itemType="Weapon" />
+            <item chance="0.05" type="TierLoot" tier="12" itemType="Weapon" />
+
+            <item chance="0.2" type="TierLoot" tier="5" itemType="Ring" />
+
+            <item chance="0.005" type="ItemLoot" name="Potion of Oryx" />
+
+            <item chance="0.5" type="StatPotionLoot" stat="Att" />
+            <item chance="0.5" type="StatPotionLoot" stat="Wis" />
+            <item chance="0.5" type="StatPotionLoot" stat="Vit" />
+            <item chance="0.5" type="StatPotionLoot" stat="Spd" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+
+    <conditionalbehaviors>
+      <chatevent text="Dance, Oryx!" adminOnly="true">
+        <setstate state="dance" />
+      </chatevent>
+      <deathportal portal="0x1901" percent="100" />
+    </conditionalbehaviors>
+  </enemy>
+
+
+  <enemy id="0x0944" name="Henchman of Oryx">
+    <behaviors>
+
+      <queuedbehavior>
+        <timed time="2500">
+          <circling speed="2" radius="20" acquireRange="3" target="0x0932" />
+        </timed>
+        <timed time="2000">
+          <chasing speed="2" range="11" acquireRange="4" target="null" />
+        </timed>
+      </queuedbehavior>
+
+      <runbehaviors>
+        <cooldown time="1500">
+          <predictiveattack range="12" lead="1" projectileIndex="0" />
+        </cooldown>
+        <cooldown time="1500">
+          <multiattack range="12" arc="0.3490658504" count="3" projectileIndex="1" />
+        </cooldown>
+      </runbehaviors>
+
+      <runbehaviors>
+        <spawnminion type="0x0de3" radius="20" count="1" cooldown="7000" initialSpawn="7000" />
+        <spawnminion type="0x0de1" radius="20" count="1" cooldown="7000" initialSpawn="7000" />
+      </runbehaviors>
+
+    </behaviors>
+  </enemy>
+
+
+  <enemy id="0x0de3" name="Aberrant of Oryx">
+    <behaviors>
+      <runbehaviors>
+        <simplewandering speed="3" />
+        <chasing speed="7" range="9" acquireRange="12" target="null" />
+        <circling speed="4" radius="15" acquireRange="5" target="0x0944" />
+      </runbehaviors>
+    </behaviors>
+    <reproduce>
+      <runbehaviors>
+        <cooldown time="1500">
+          <tossenemy angle="random_0_179_deg" range="7" type="0x0de4" />
+        </cooldown>
+      </runbehaviors>
+    </reproduce>
+  </enemy>
+
+
+  <enemy id="0x0de4" name="Aberrant Blaster">
+    <behaviors>
+      <attack>
+        <runbehaviors>
+          <if>
+            <isentitypresent range="5" target="null" />
+            <queuedbehavior>
+              <multiattack range="8" arc="0.1745329252" count="6" />
+              <die />
+            </queuedbehavior>
+          </if>
+          <cooldownexact time="1500">
+            <die />
+          </cooldownexact>
+        </runbehaviors>
+      </attack>
+    </behaviors>
+  </enemy>
+
+
+  <enemy id="0x0de1" name="Monstrosity of Oryx">
+    <behaviors>
+      <runbehaviors>
+        <simplewandering speed="3" />
+        <chasing speed="7" range="9" acquireRange="12" target="null" />
+        <circling speed="4" radius="15" acquireRange="5" target="0x0944" />
+      </runbehaviors>
+    </behaviors>
+    <reproduce>
+      <runbehaviors>
+        <if>
+          <isentitypresent range="8" target="null" />
+          <cooldown time="1000">
+            <spawnminionimmediate type="0x0de2" radius="0" count="1" minRange="1" />
+          </cooldown>
+        </if>
+      </runbehaviors>
+    </reproduce>
+  </enemy>
+
+
+  <enemy id="0x0de2" name="Monstrosity Scarab">
+    <behaviors>
+      <attack>
+        <runbehaviors>
+          <if>
+            <isentitypresent range="8" target="null" />
+            <runbehaviors>
+              <chasing speed="18" range="10" acquireRange="1" target="null" />
+              <if>
+                <isentitypresent range="3" target="null" />
+                <queuedbehavior>
+                  <ringattack count="12" />
+                  <die />
+                </queuedbehavior>
+              </if>
+            </runbehaviors>
+          </if>
+          <cooldownexact time="1500">
+            <die />
+          </cooldownexact>
+        </runbehaviors>
+      </attack>
+    </behaviors>
+  </enemy>
+
+</enemies>
