@@ -13,7 +13,7 @@
 		<Defense>0</Defense>
 		<Terrain>MidSand</Terrain>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Blade</ObjectId>
 			<Damage>11</Damage>
 			<Speed>60</Speed>
@@ -36,7 +36,7 @@
 		<Defense>0</Defense>
 		<Terrain>MidSand</Terrain>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Red Fire</ObjectId>
 			<Damage>13</Damage>
 			<Speed>60</Speed>
@@ -63,13 +63,20 @@
 		<XpMult>1.6</XpMult>
 		<SpawnProb>0.75</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Red Fire</ObjectId>
 			<Damage>16</Damage>
 			<Speed>60</Speed>
 			<Size>80</Size>
 			<LifetimeMS>2000</LifetimeMS>
-		</Projectile>	
+		</Projectile>
+		<Projectile id="1">
+			<ObjectId>Red Fire</ObjectId>
+			<Damage>20</Damage>
+			<Speed>65</Speed>
+			<Size>100</Size>
+			<LifetimeMS>2000</LifetimeMS>
+		</Projectile>		
 				
 		
 		
@@ -89,12 +96,19 @@
 		<XpMult>0.7</XpMult>
 		<SpawnProb>1.0</SpawnProb>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Red Fire</ObjectId>
 			<Damage>35</Damage>
 			<Speed>45</Speed>
 			<LifetimeMS>4500</LifetimeMS>
 			<Size>100</Size>
+		</Projectile>
+		<Projectile id="1">
+			<ObjectId>Red Fire</ObjectId>
+			<Damage>45</Damage>
+			<Speed>60</Speed>
+			<LifetimeMS>2500</LifetimeMS>
+			<Size>220</Size>
 		</Projectile>
 
 
@@ -114,12 +128,19 @@
 		<XpMult>0.7</XpMult>
 		<SpawnProb>1.0</SpawnProb>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Black Ball</ObjectId>
 			<Damage>22</Damage>
 			<Speed>120</Speed>
 			<LifetimeMS>200</LifetimeMS>
 			<Size>90</Size>
+		</Projectile>
+		<Projectile id="1">
+			<ObjectId>Black Arrow</ObjectId>
+			<Damage>34</Damage>
+			<Speed>70</Speed>
+			<LifetimeMS>1400</LifetimeMS>
+			<Size>110</Size>
 		</Projectile>
 
 
@@ -180,7 +201,7 @@
 		<MaxHitPoints>1000</MaxHitPoints>
 		<Size>50</Size>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Violet Missile</ObjectId>
 			<Damage>24</Damage>
 			<Speed>65</Speed>
@@ -205,7 +226,7 @@
 		<MaxHitPoints>1000</MaxHitPoints>		
 		<Size>50</Size>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Black Missile</ObjectId>
 			<Damage>22</Damage>
 			<Speed>65</Speed>
@@ -230,7 +251,7 @@
 		<MaxHitPoints>1000</MaxHitPoints>
 		<Size>50</Size>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Fire Missile</ObjectId>
 			<Damage>24</Damage>
 			<Speed>65</Speed>
@@ -257,7 +278,7 @@
 		<XpMult>0.8</XpMult>
 		<SpawnProb>1.0</SpawnProb>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Red Fire</ObjectId>
 			<Damage>18</Damage>
 			<Speed>70</Speed>
@@ -282,7 +303,7 @@
 		<XpMult>2</XpMult>
 		<SpawnProb>1.0</SpawnProb>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Red Fire</ObjectId>
 			<Damage>20</Damage>
 			<Speed>65</Speed>
@@ -305,14 +326,21 @@
 		<Terrain>MidSand</Terrain>
 		<SpawnProb>1.0</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Green Magic</ObjectId>
 			<Damage>20</Damage>
 			<Speed>55</Speed>
 			<LifetimeMS>2600</LifetimeMS>
 			<Size>100</Size>
 		</Projectile>
-	
+		<Projectile id="1">
+			<ObjectId>Green Spinner</ObjectId>
+			<Damage>30</Damage>
+			<Speed>60</Speed>
+			<LifetimeMS>2600</LifetimeMS>
+			<Size>100</Size>
+			<ConditionEffect duration="1.5">Blind</ConditionEffect>
+		</Projectile>		
 		
 
 		
@@ -334,14 +362,20 @@
 		<XpMult>1.8</XpMult>
 		<SpawnProb>0.75</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Fire Missile</ObjectId>
 			<Damage>28</Damage>
 			<Speed>65</Speed>
 			<Size>80</Size>
 			<LifetimeMS>1700</LifetimeMS>
 		</Projectile>
-
+		<Projectile id="1">
+			<ObjectId>Fire Missile</ObjectId>
+			<Damage>15</Damage>
+			<Speed>55</Speed>
+			<Size>100</Size>
+			<LifetimeMS>530</LifetimeMS>
+		</Projectile>
 
 		
 	</Object>
@@ -362,7 +396,7 @@
 		<Flying/>
 		<SpawnProb>1.0</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Red Fire</ObjectId>
 			<Damage>17</Damage>
 			<Speed>50</Speed>
@@ -386,7 +420,7 @@
 		<Flying/>
 		<SpawnProb>1.0</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Ice Spinner</ObjectId>
 			<Damage>14</Damage>
 			<Speed>80</Speed>
@@ -412,7 +446,7 @@
 		<Flying/>
 		<SpawnProb>1.0</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Green Magic</ObjectId>
 			<Damage>18</Damage>
 			<Speed>50</Speed>
@@ -435,7 +469,7 @@
 		<Defense>3</Defense>
 		<Terrain>MidPlains</Terrain>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Blade</ObjectId>
 			<Damage>19</Damage>
 			<Speed>70</Speed>
@@ -458,7 +492,7 @@
 		<Defense>0</Defense>
 		<Terrain>MidPlains</Terrain>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Red Fire</ObjectId>
 			<Damage>17</Damage>
 			<Speed>60</Speed>
@@ -498,7 +532,7 @@
 		<Terrain>MidPlains</Terrain>
 		<SpawnProb>1.0</SpawnProb>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Blade</ObjectId>
 			<Damage>27</Damage>
 			<Speed>70</Speed>
@@ -525,7 +559,7 @@
 		<Terrain>MidPlains</Terrain>
 		<SpawnProb>1.0</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Dark Gray Spinner</ObjectId>
 			<Damage>18</Damage>
 			<Speed>55</Speed>
@@ -550,7 +584,7 @@
 		<Terrain>MidPlains</Terrain>
 		<SpawnProb>1.0</SpawnProb>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Grey Boomerang</ObjectId>
 			<Damage>30</Damage>
 			<Speed>55</Speed>
@@ -663,7 +697,7 @@
 		<Flying/>
 		<SpawnProb>0.75</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Yellow Missile</ObjectId>
 			<Damage>22</Damage>
 			<Speed>75</Speed>
@@ -689,7 +723,7 @@
 		<Flying/>
 		<Terrain>MidPlains</Terrain>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Yellow Missile</ObjectId>
 			<Damage>16</Damage>
 			<Speed>75</Speed>
@@ -713,7 +747,7 @@
 		<Flying/>
 		<Terrain>MidPlains</Terrain>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Blue Missile</ObjectId>
 			<Damage>25</Damage>
 			<Speed>75</Speed>
@@ -740,7 +774,7 @@
 		<XpMult>2</XpMult>
 		<SpawnProb>0.75</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Gray Spinner</ObjectId>
 			<Damage>22</Damage>
 			<Speed>42</Speed>
@@ -765,7 +799,7 @@
 		<Defense>0</Defense>
 		<XpMult>0.5</XpMult>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>White Flame</ObjectId>
 			<Damage>14</Damage>
 			<Speed>70</Speed>
@@ -794,7 +828,7 @@
 		<SpawnProb>0.75</SpawnProb>
 		<Flying/>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>White Flame</ObjectId>
 			<Damage>15</Damage>
 			<Speed>65</Speed>
@@ -819,7 +853,7 @@
 		<Defense>2</Defense>
 		<Terrain>MidForest</Terrain>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Blade</ObjectId>
 			<Damage>10</Damage>
 			<Speed>60</Speed>
@@ -843,7 +877,7 @@
 		<Defense>0</Defense>
 		<Terrain>MidForest</Terrain>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Red Fire</ObjectId>
 			<Damage>12</Damage>
 			<Speed>35</Speed>
@@ -869,7 +903,7 @@
 		<Defense>3</Defense>
 		<Terrain>MidForest</Terrain>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Blade</ObjectId>
 			<Damage>14</Damage>
 			<Speed>60</Speed>
@@ -895,7 +929,7 @@
 		<XpMult>1.6</XpMult>
 		<SpawnProb>0.75</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Blade</ObjectId>
 			<Damage>16</Damage>
 			<Speed>60</Speed>
@@ -922,7 +956,7 @@
 		<XpMult>0.7</XpMult>
 		<SpawnProb>1.0</SpawnProb>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Blade</ObjectId>
 			<Damage>25</Damage>
 			<Speed>75</Speed>
@@ -946,7 +980,7 @@
 		<Terrain>MidForest</Terrain>
 		<SpawnProb>1.0</SpawnProb>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Blue Mystic Shot</ObjectId>
 			<Damage>37</Damage>
 			<Speed>10</Speed>
@@ -972,7 +1006,7 @@
 		<Terrain>MidForest</Terrain>
 		<XpMult>0.4</XpMult>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Violet Missile</ObjectId>
 			<Damage>17</Damage>
 			<Speed>65</Speed>
@@ -998,7 +1032,7 @@
 		<Terrain>MidForest</Terrain>
 		<XpMult>0.4</XpMult>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Fire Missile</ObjectId>
 			<Damage>19</Damage>
 			<Speed>80</Speed>
@@ -1023,7 +1057,7 @@
 		<Terrain>MidForest</Terrain>
 		<XpMult>0.4</XpMult>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Brown Magic</ObjectId>
 			<Damage>16</Damage>
 			<Speed>70</Speed>
@@ -1047,7 +1081,7 @@
 		<XpMult>1</XpMult>
 		<SpawnProb>1.0</SpawnProb>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Grey Missile</ObjectId>
 			<Damage>22</Damage>
 			<Speed>55</Speed>
@@ -1084,7 +1118,7 @@
 		<Flying/>
 		<SpawnProb>0.75</SpawnProb>
 		
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Fire Missile</ObjectId>
 			<Damage>30</Damage>
 			<Speed>65</Speed>
@@ -1111,7 +1145,7 @@
 		<Flying/>
 		<Terrain>MidForest</Terrain>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Fire Missile</ObjectId>
 			<Damage>20</Damage>
 			<Speed>65</Speed>

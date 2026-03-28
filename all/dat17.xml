@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-
 <Objects>
+	
+
 	<Object type="0x600" id="Pirate">
 		<Group>Pirates</Group>
 		<Enemy/>
@@ -12,13 +12,17 @@
 		<MaxHitPoints>5</MaxHitPoints>
 		<Defense>0</Defense>
 		<Terrain>ShoreSand</Terrain>
-		<Projectile>
+
+		<Projectile id="0">
 			<ObjectId>Blade</ObjectId>
 			<Damage>4</Damage>
 			<Speed>40</Speed>
 			<LifetimeMS>600</LifetimeMS>
 		</Projectile>
+
+
 	</Object>
+	
 	<Object type="0x601" id="Piratess">
 		<Group>Pirates</Group>
 		<Enemy/>
@@ -31,13 +35,19 @@
 		<Defense>0</Defense>
 		<Terrain>ShoreSand</Terrain>
 		<SpawnProb>1.0</SpawnProb>
-		<Projectile>
+
+		<Projectile id="0">
 			<ObjectId>Blade</ObjectId>
 			<Damage>4</Damage>
 			<Speed>40</Speed>
 			<LifetimeMS>600</LifetimeMS>
 		</Projectile>
+
+
+
+
 	</Object>
+	
 	<Object type="0x602" id="Snake">
 		<Group>Snakes</Group>
 		<Enemy/>
@@ -52,7 +62,7 @@
 		<SpawnProb>1.0</SpawnProb>
 		<Spawn><Mean>5</Mean><StdDev>1</StdDev><Min>2</Min><Max>7</Max></Spawn>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Green Magic</ObjectId>
 			<Damage>4</Damage>
 			<Speed>40</Speed>
@@ -74,7 +84,7 @@
 		<Defense>0</Defense>
 		<Terrain>ShoreSand</Terrain>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Green Magic</ObjectId>
 			<Damage>7</Damage>
 			<Speed>40</Speed>
@@ -135,7 +145,10 @@
 		<Group>Bandits</Group>
 		<Enemy/>
 		<Class>Character</Class>
-		<AnimatedTexture><File>chars8x8rBeach</File><Index>11</Index></AnimatedTexture>
+		<AnimatedTexture>
+          <File>chars8x8rBeach</File>
+          <Index>11</Index>
+        </AnimatedTexture>
 		<HitSound>monster/elves_hit</HitSound>
 		<DeathSound>monster/elves_death</DeathSound>
 		<Size>100</Size>
@@ -145,11 +158,11 @@
 		
 		<Projectile>
 			<ObjectId>Blade</ObjectId>
-			<Damage>9</Damage>
+			<Damage>8</Damage>
 			<Speed>60</Speed>
 			<Size>60</Size>
-			<LifetimeMS>600</LifetimeMS>
-		</Projectile>
+			<LifetimeMS>1000</LifetimeMS>
+		</Projectile>		
 		
 		
 	</Object>
@@ -172,7 +185,7 @@
 		<Cube/>
 		<XpMult>0.6</XpMult>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Salmon Missile</ObjectId>
 			<Damage>9</Damage>
 			<Speed>60</Speed>
@@ -198,7 +211,7 @@
 		<Cube/>
 		<XpMult>0.6</XpMult>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Purple Magic</ObjectId>
 			<Damage>12</Damage>
 			<Speed>65</Speed>
@@ -224,7 +237,7 @@
 		<Cube/>
 		<XpMult>0.6</XpMult>
 
-		<Projectile>
+		<Projectile id="0">
 			<ObjectId>Green Magic</ObjectId>
 			<Damage>10</Damage>
 			<Speed>60</Speed>
