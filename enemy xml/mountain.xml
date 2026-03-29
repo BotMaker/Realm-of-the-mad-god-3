@@ -29,7 +29,7 @@
     <behaviors>
       <simplewandering speed="2" />
       <runbehaviors>
-        <cooldown time="1000">
+        <cooldown time="2000">
           <multiattack range="12" arc="0.1745329252" count="4" />
         </cooldown>
         <cooldown time="1000">
@@ -123,8 +123,8 @@
         <simplewandering speed="4" />
       </ifnot>
       <runbehaviors>
-        <cooldown time="750">
-          <predictiveringattack range="5" lead="0.5" count="12" projectileIndex="0" />
+        <cooldown time="3000">
+          <ringattack range="10" lead="1" projectileIndex="0" />
         </cooldown>
         <cooldown time="1000">
           <predictiveattack range="10" lead="1" projectileIndex="1" />
@@ -146,11 +146,11 @@
   <enemy id="0x657" name="Flying Brain">
     <behaviors>
       <ifnot>
-        <chasing speed="6" range="7" acquireRange="4" target="null" />
+        <chasing speed="6" range="8" acquireRange="8" target="null" />
         <simplewandering speed="4" />
       </ifnot>
       <cooldown time="500">
-        <ringattack range="5" count="12" />
+        <ringattack range="5" count="4" />
       </cooldown>
     </behaviors>
     <loot>
@@ -168,15 +168,15 @@
   <enemy id="0x658" name="Slime God">
     <behaviors>
       <ifnot>
-        <chasing speed="10" range="7" acquireRange="4" target="null" />
+        <chasing speed="6" range="4" acquireRange="4" target="null" />
         <simplewandering speed="4" />
       </ifnot>
       <runbehaviors>
         <cooldown time="1000">
-          <predictivemultiattack range="12" arc="0.1745329252" count="5" lead="1" />
+          <predictivemultiattack range="8" arc="0.1745329252" count="5" lead="1" />
         </cooldown>
-        <cooldown time="650">
-          <predictiveattack range="10" lead="1" projectileIndex="1" />
+        <cooldown time="1500">
+          <predictiveattack range="8" lead="1" projectileIndex="1" />
         </cooldown>
       </runbehaviors>
     </behaviors>
@@ -198,7 +198,7 @@
         <chasing speed="4" range="7" acquireRange="4" target="null" />
         <simplewandering speed="4" />
       </ifnot>
-      <cooldown time="900">
+      <cooldown time="1500">
         <multiattack range="12" arc="0.4363323130" count="7" />
       </cooldown>
     </behaviors>
@@ -345,59 +345,41 @@
     </loot>
   </enemy>
 
-   <enemy id="0x091a" name="Djinn">
-    <behaviors>
-      <cooldown time="1500">
-          <multiattack range="15" arc="0.3490658504" count="3" />
-          </cooldown>
-      <hpgreaterequal hp="400">
+  
 
-        <queuedbehavior>
-          <setconditioneffect effect="Invulnerable" />
-          <timed time="2500">
-            <false>
-              <chasing speed="6" range="7" acquireRange="0" target="null" />
-            </false>
-          </timed>
-          
 
-          <unsetconditioneffect effect="Invulnerable" />
-          <if>
-            <isentitypresent range="10" target="null" />
-            <queuedbehavior>
-              <cooldown time="200" />
-              <runbehaviors>
-                <ringattack range="4" offset="0.0" />
-              </runbehaviors>
+<enemy id="0x091a" name="Djinn">
+  <behaviors>
+    <hpgreaterequal hp="400">
+      <runbehaviors>
+        <ifnot>
+          <chasing speed="6" range="11" acquireRange="8" target="null" />
+          <simplewandering speed="3" />
+        </ifnot>
 
-            </queuedbehavior>
-          </if>
-        </queuedbehavior>
-      </hpgreaterequal>
-    </behaviors>
-    <conditionalbehaviors>
-      <hplessercond hp="400">
-        <queuedbehavior>
-          <setconditioneffect effect="Invulnerable" />
-          <timed time="1000">
-            <flashing time="1500" color="0xffff0000" />
-          </timed>
-          <ringattack range="12" />
-          <die />
-        </queuedbehavior>
-      </hplessercond>
-    </conditionalbehaviors>
-    <loot>
-      <lootbehavior>
-        <entry chance="1" bag="CommonGodSoulBag" />
-        <entry chance="360">
-          <lootdef min="0" max="1" threshold="0" bags="8">
-            <item chance="0.5" type="StatPotionLoot" stat="Spd" />
-          </lootdef>
-        </entry>
-      </lootbehavior>
-    </loot>
-  </enemy>
+        <cooldownexact time="850">
+          <multiattack range="12" arc="0.1745329252" count="3" projectileIndex="1" />
+        </cooldownexact>
+      </runbehaviors>
+    </hpgreaterequal>
+
+    <hplessercond hp="400">
+      <queuedbehavior>
+         <setconditioneffect effect="Invulnerable" />
+
+        <timed time="1000">
+          <runbehaviors>
+            <flashing time="1000" color="0xffff0000" />
+          </runbehaviors>
+        </timed>
+
+        <ringattack range="12" count="12" projectileIndex="1" />
+        <die />
+      </queuedbehavior>
+    </hplessercond>
+  </behaviors>
+</enemy>
+  
 
   <enemy id="0x6d8" name="Leviathan">
     <behaviors>
@@ -496,5 +478,178 @@
       </lootbehavior>
     </loot>
   </enemy>
+  
+  <enemy id="0x0935" name="Mysterious Crystal">
+  <behaviors>
+    <runbehaviors>
+      <once>
+        <setkey key="-1" value="1" />
+      </once>
+
+      <cooldown time="5000">
+        <hplesserpercent percent="0.9">
+          <setkey key="-1" value="2" />
+        </hplesserpercent>
+      </cooldown>
+
+      <cooldown time="5000">
+        <hplesserpercent percent="0.85">
+          <setkey key="-1" value="3" />
+        </hplesserpercent>
+      </cooldown>
+
+      <cooldown time="5000">
+        <hplesserpercent percent="0.8">
+          <setkey key="-1" value="7" />
+        </hplesserpercent>
+      </cooldown>
+
+      <ifequal key="-1" value="1">
+        <queuedbehavior>
+          <cooldown time="100" />
+          <true>
+            <rand>
+              <randomtaunt probability="0.1" text="Break the crystal for great rewards..." />
+              <randomtaunt probability="0.1" text="Help me..." />
+            </rand>
+          </true>
+          <cooldownexact time="10000">
+            <setkey key="-1" value="1" />
+          </cooldownexact>
+        </queuedbehavior>
+      </ifequal>
+
+      <ifequal key="-1" value="2">
+        <queuedbehavior>
+          <cooldown time="0">
+            <flashing time="1000" color="0xffffffff" />
+          </cooldown>
+          <cooldown time="1100">
+            <flashing time="1000" color="0xffffffff" />
+          </cooldown>
+          <true>
+            <rand>
+              <randomtaunt probability="0.1" text="Fire upon this crystal with all your might for 5 seconds" />
+              <randomtaunt probability="0.1" text="If your attacks are weak, the crystal magically heals" />
+              <randomtaunt probability="0.1" text="Gather a large group to smash it open" />
+            </rand>
+          </true>
+          <cooldown time="5000">
+            <setkey key="-1" value="1" />
+          </cooldown>
+        </queuedbehavior>
+      </ifequal>
+
+      <ifequal key="-1" value="3">
+        <queuedbehavior>
+          <cooldown time="100" />
+          <true>
+            <rand>
+              <randomtaunt probability="0.1" text="Sweet treasure awaits for powerful adventurers!" />
+              <randomtaunt probability="0.1" text="Yes! Smash my prison for great rewards!" />
+            </rand>
+          </true>
+          <cooldown time="5000">
+            <setkey key="-1" value="4" />
+          </cooldown>
+        </queuedbehavior>
+      </ifequal>
+
+      <ifequal key="-1" value="4">
+        <queuedbehavior>
+          <cooldown time="100" />
+          <true>
+            <rand>
+              <randomtaunt probability="0.1" text="If you are not very strong, this could kill you" />
+              <randomtaunt probability="0.1" text="If you are not yet powerful, stay away from the Crystal" />
+              <randomtaunt probability="0.1" text="New adventurers should stay away" />
+              <randomtaunt probability="0.1" text="That's the spirit. Lay your fire upon me." />
+              <randomtaunt probability="0.1" text="So close..." />
+            </rand>
+          </true>
+          <cooldown time="5000">
+            <setkey key="-1" value="5" />
+          </cooldown>
+        </queuedbehavior>
+      </ifequal>
+
+      <ifequal key="-1" value="5">
+        <queuedbehavior>
+          <cooldown time="100" />
+          <true>
+            <rand>
+              <randomtaunt probability="0.1" text="I think you need more people..." />
+              <randomtaunt probability="0.1" text="Call all your friends to help you break the crystal!" />
+            </rand>
+          </true>
+          <cooldownexact time="10000">
+            <setkey key="-1" value="6" />
+          </cooldownexact>
+        </queuedbehavior>
+      </ifequal>
+
+      <ifequal key="-1" value="6">
+        <runbehaviors>
+          <simpletaunt text="Perhaps you need a bigger group. Ask others to join you!" />
+          <cooldown time="0">
+            <flashing time="1000" color="0xffffffff" />
+          </cooldown>
+          <heal cooldown="5000" amount="1000000" target="0x0935" />
+          <ringattack radius="16" count="22" projectileIndex="0" />
+          <cooldown time="1100">
+            <flashing time="1000" color="0xffffffff" />
+          </cooldown>
+          <cooldownexact time="5000">
+            <setkey key="-1" value="1" />
+          </cooldownexact>
+        </runbehaviors>
+      </ifequal>
+
+      <ifequal key="-1" value="7">
+        <queuedbehavior>
+          <setconditioneffect effect="Invulnerable" />
+          <once>
+            <simpletaunt text="You cracked the crystal! Soon we shall emerge!" />
+          </once>
+          <cooldown time="1000">
+            <setsize size="95" />
+          </cooldown>
+          <cooldown time="1000">
+            <setsize size="90" />
+          </cooldown>
+          <cooldown time="1000">
+            <setsize size="85" />
+          </cooldown>
+          <cooldown time="1000">
+            <setsize size="80" />
+          </cooldown>
+          <flashing time="1000" color="0xffffffff" />
+          <flashing time="1000" color="0xffffffff" />
+          <cooldownexact time="4000">
+            <setkey key="-1" value="8" />
+          </cooldownexact>
+        </queuedbehavior>
+      </ifequal>
+
+      <ifequal key="-1" value="8">
+        <queuedbehavior>
+          <once>
+            <simpletaunt text="This your reward! Imagine what evil even Oryx needs to keep locked up!" />
+          </once>
+          <once>
+            <ringattack radius="16" count="22" projectileIndex="0" />
+          </once>
+          <once>
+            <spawnminionimmediate type="0x0941" count="1" minRange="0" maxRange="1" />
+          </once>
+          <once>
+            <despawn />
+          </once>
+        </queuedbehavior>
+      </ifequal>
+
+    </runbehaviors>
+  </behaviors>
+</enemy>
 
 </enemies>

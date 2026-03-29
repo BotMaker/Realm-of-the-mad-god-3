@@ -1,0 +1,412 @@
+<enemies>
+
+  <enemy id="0x0917" name="Stheno the Snake Queen">
+    <behaviors>
+      <queuedbehavior>
+        <once>
+          <setstate state="Silver Blasts" />
+        </once>
+      </queuedbehavior>
+
+      <runbehaviors>
+        <state name="Silver Blasts">
+          <queuedbehavior>
+            <cooldown time="1000" />
+            <runbehaviors>
+              <setconditioneffect effect="Invulnerable" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="1.5707963268" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="3.1415926536" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="6.2831853072" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="4.7123889804" projectileIndex="0" />
+            </runbehaviors>
+
+            <cooldown time="1000" />
+            <runbehaviors>
+              <multiattack range="15" arc="0.1745329252" count="2" offset="1.5707963268" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="3.1415926536" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="6.2831853072" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="4.7123889804" projectileIndex="0" />
+            </runbehaviors>
+
+            <cooldown time="1000" />
+            <runbehaviors>
+              <multiattack range="15" arc="0.1745329252" count="2" offset="1.5707963268" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="3.1415926536" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="6.2831853072" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="4.7123889804" projectileIndex="0" />
+            </runbehaviors>
+
+            <cooldown time="1000" />
+            <runbehaviors>
+              <multiattack range="15" arc="0.1745329252" count="2" offset="1.5707963268" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="3.1415926536" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="6.2831853072" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="4.7123889804" projectileIndex="0" />
+            </runbehaviors>
+
+            <cooldown time="1000" />
+            <runbehaviors>
+              <multiattack range="15" arc="0.1745329252" count="2" offset="1.5707963268" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="3.1415926536" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="6.2831853072" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="4.7123889804" projectileIndex="0" />
+            </runbehaviors>
+
+            <cooldown time="1000" />
+            <runbehaviors>
+              <unsetconditioneffect effect="Invulnerable" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="1.5707963268" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="3.1415926536" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="6.2831853072" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="4.7123889804" projectileIndex="0" />
+            </runbehaviors>
+
+            <cooldown time="1000" />
+            <runbehaviors>
+              <multiattack range="15" arc="0.1745329252" count="2" offset="1.5707963268" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="3.1415926536" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="6.2831853072" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="4.7123889804" projectileIndex="0" />
+            </runbehaviors>
+
+            <cooldown time="1000" />
+            <runbehaviors>
+              <multiattack range="15" arc="0.1745329252" count="2" offset="1.5707963268" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="3.1415926536" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="6.2831853072" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="4.7123889804" projectileIndex="0" />
+            </runbehaviors>
+
+            <cooldown time="1000" />
+            <runbehaviors>
+              <multiattack range="15" arc="0.1745329252" count="2" offset="1.5707963268" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="3.1415926536" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="6.2831853072" projectileIndex="0" />
+              <multiattack range="15" arc="0.1745329252" count="2" offset="4.7123889804" projectileIndex="0" />
+            </runbehaviors>
+
+            <setstate state="Spawn Stheno Swarm" />
+          </queuedbehavior>
+        </state>
+
+        <state name="Spawn Stheno Swarm">
+          <runbehaviors>
+            <smoothwandering speed="2" radius="3" />
+          </runbehaviors>
+          <queuedbehavior>
+            <setconditioneffect effect="Invulnerable" />
+            <spawnminionimmediate type="0x0919" count="3" minRange="8" maxRange="8" />
+            <cooldown time="5000" />
+            <setstate state="Blind Ring Attack + ThrowAttack" />
+          </queuedbehavior>
+        </state>
+
+        <state name="Blind Ring Attack + ThrowAttack">
+          <queuedbehavior>
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <unsetconditioneffect effect="Invulnerable" />
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <cooldown time="500" />
+            <runbehaviors>
+              <ringattack count="8" range="10" offset="0" projectileIndex="1" />
+              <throwattack range="5" angle="10" tossObject="100" />
+            </runbehaviors>
+
+            <setstate state="Silver Blasts" />
+          </queuedbehavior>
+        </state>
+      </runbehaviors>
+    </behaviors>
+
+    <loot>
+      <lootbehavior>
+        <entry chance="100">
+          <lootdef min="0" max="2" threshold="2" bags="8">
+            <item chance="0.01" name="Wand of the Bulwark" />
+            <item chance="0.05" name="Snake Skin Armor" />
+            <item chance="0.05" name="Snake Skin Shield" />
+            <item chance="0.05" name="Snake Eye Ring" />
+            <item chance="0.01" name="Wine Cellar Incantation" />
+            <item chance="0.8" type="StatPotionLoot" stat="Spd" />
+            <item chance="0.1" type="StatPotionLoot" stat="Def" />
+            <item chance="0.2" type="TierLoot" tier="9" itemType="Weapon" />
+            <item chance="0.1" type="TierLoot" tier="10" itemType="Weapon" />
+            <item chance="0.3" type="TierLoot" tier="8" itemType="Armor" />
+            <item chance="0.2" type="TierLoot" tier="9" itemType="Armor" />
+            <item chance="0.1" type="TierLoot" tier="10" itemType="Armor" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0e26" name="Snakepit Guard">
+    <behaviors>
+      <setsize size="100" />
+      <smoothwandering speed="2" radius="2" />
+      <runbehaviors>
+        <cooldown time="2000">
+          <multiattack range="15" arc="0.1745329252" count="1" offset="2.0943951024" projectileIndex="2" />
+        </cooldown>
+        <cooldown time="2000">
+          <multiattack range="15" arc="0.1745329252" count="1" offset="4.1887902048" projectileIndex="2" />
+        </cooldown>
+        <cooldown time="2000">
+          <multiattack range="15" arc="0.1745329252" count="1" offset="6.2831853072" projectileIndex="2" />
+        </cooldown>
+        <cooldown time="500">
+          <multiattack range="100" arc="0.5235987756" count="3" offset="0" projectileIndex="0" />
+        </cooldown>
+        <cooldown time="1000">
+          <ringattack count="6" range="10" offset="0" projectileIndex="1" />
+        </cooldown>
+      </runbehaviors>
+    </behaviors>
+
+    <loot>
+      <lootbehavior>
+        <entry chance="100">
+          <lootdef min="0" max="2" threshold="2" bags="8">
+            <item chance="0.05" name="Wand of the Bulwark" />
+            <item chance="0.05" name="Snake Skin Armor" />
+            <item chance="0.05" name="Snake Skin Shield" />
+            <item chance="0.05" name="Snake Eye Ring" />
+            <item chance="0.05" name="Wine Cellar Incantation" />
+            <item chance="1.0" type="StatPotionLoot" stat="Spd" />
+            <item chance="0.1" type="StatPotionLoot" stat="Def" />
+            <item chance="0.2" type="TierLoot" tier="9" itemType="Weapon" />
+            <item chance="0.1" type="TierLoot" tier="10" itemType="Weapon" />
+            <item chance="0.3" type="TierLoot" tier="8" itemType="Armor" />
+            <item chance="0.2" type="TierLoot" tier="9" itemType="Armor" />
+            <item chance="0.1" type="TierLoot" tier="10" itemType="Armor" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0918" name="Stheno Pet">
+    <behaviors>
+      <ifnot>
+        <circling speed="10" radius="20" acquireRange="25" target="0x0917" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="20" projectileIndex="0" />
+      </cooldown>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x0919" name="Stheno Swarm">
+    <behaviors>
+      <ifnot>
+        <chasing speed="4" range="100" acquireRange="2" target="0x0917" />
+        <simplewandering speed="4" />
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="20" projectileIndex="0" />
+      </cooldown>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x0223" name="Pit Snake">
+    <behaviors>
+      <simplewandering speed="8" />
+      <cooldown time="1000">
+        <simpleattack range="10" projectileIndex="0" />
+      </cooldown>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x0224" name="Pit Viper">
+    <behaviors>
+      <simplewandering speed="9" />
+      <cooldown time="1000">
+        <simpleattack range="10" projectileIndex="0" />
+      </cooldown>
+    </behaviors>
+  </enemy>
+
+  <enemy id="0x0227" name="Yellow Python">
+    <behaviors>
+      <ifnot>
+        <chasing speed="10" range="10" acquireRange="1" target="null" />
+        <simplewandering speed="8" />
+      </ifnot>
+      <cooldown time="1000">
+        <simpleattack range="10" projectileIndex="0" />
+      </cooldown>
+    </behaviors>
+
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="1" threshold="0" bags="8">
+          <item chance="0.1" name="Snake Oil" />
+          <item chance="0.1" name="Ring of Speed" />
+          <item chance="0.1" name="Ring of Vitality" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0226" name="Brown Python">
+    <behaviors>
+      <simplewandering speed="5" />
+      <cooldown time="1000">
+        <simpleattack range="10" projectileIndex="0" />
+      </cooldown>
+    </behaviors>
+
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="1" threshold="0" bags="8">
+          <item chance="0.1" name="Snake Oil" />
+          <item chance="0.1" name="Leather Armor" />
+          <item chance="0.1" name="Ring of Wisdom" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0225" name="Fire Python">
+    <behaviors>
+      <ifnot>
+        <cooldown time="2000">
+          <charge speed="10" radius="10" target="null" />
+        </cooldown>
+        <simplewandering speed="8" />
+      </ifnot>
+      <cooldown time="1000">
+        <multiattack range="100" arc="0.1047197551" count="3" offset="0" projectileIndex="0" />
+      </cooldown>
+    </behaviors>
+
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="1" threshold="0" bags="8">
+          <item chance="0.1" name="Snake Oil" />
+          <item chance="0.1" name="Fire Bow" />
+          <item chance="0.1" name="Fire Nova Spell" />
+        </lootdef>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0228" name="Greater Pit Snake">
+    <behaviors>
+      <ifnot>
+        <chasing speed="10" range="10" acquireRange="5" target="null" />
+        <simplewandering speed="8" />
+      </ifnot>
+      <cooldown time="1000">
+        <multiattack range="100" arc="0.1047197551" count="3" offset="0" projectileIndex="0" />
+      </cooldown>
+    </behaviors>
+
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="1" threshold="0" bags="8">
+          <item chance="0.1" name="Snake Oil" />
+        </lootdef>
+        <entry chance="100">
+          <lootdef min="0" max="1" threshold="0" bags="1">
+            <item chance="0.1" name="Glass Sword" />
+            <item chance="0.1" name="Avenger Staff" />
+            <item chance="0.1" name="Wand of Dark Magic" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+  <enemy id="0x0229" name="Greater Pit Viper">
+    <behaviors>
+      <ifnot>
+        <chasing speed="10" range="10" acquireRange="5" target="null" />
+        <simplewandering speed="8" />
+      </ifnot>
+      <cooldown time="300">
+        <simpleattack range="10" projectileIndex="0" />
+      </cooldown>
+    </behaviors>
+
+    <loot>
+      <lootbehavior>
+        <lootdef min="0" max="1" threshold="0" bags="8">
+          <item chance="0.1" name="Snake Oil" />
+        </lootdef>
+        <entry chance="100">
+          <lootdef min="0" max="1" threshold="0" bags="2">
+            <item chance="0.1" name="Ring of Greater Attack" />
+            <item chance="0.1" name="Ring of Greater Health" />
+          </lootdef>
+        </entry>
+      </lootbehavior>
+    </loot>
+  </enemy>
+
+</enemies>

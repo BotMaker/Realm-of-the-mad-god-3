@@ -59,6 +59,8 @@ global constant ENEMY_XML_COOLDOWNS = 19
 global constant ENEMY_XML_ONCE = 20
 global constant ENEMY_XML_STATE = 21
 global constant ENEMY_DELTA_TIME = 22
+global constant ENEMY_NAME = 23
+global constant ENEMY_CONDITIONS = 24
 
 global sequence enemy_list
 
@@ -118,6 +120,8 @@ enemy_behavior_load("enemy xml\\shoressand.xml")
 enemy_behavior_load("enemy xml\\mountain.xml")
 enemy_behavior_load("enemy xml\\oryx.xml")
 enemy_behavior_load("enemy xml\\midland.xml")
+enemy_behavior_load("enemy xml\\unknown.xml")
+enemy_behavior_load("enemy xml\\snakepit.xml")
 
 
 
@@ -702,6 +706,7 @@ end if
                     end if
 
                     if player_unhitable = 0 then
+
                         player_health -= damage
                     end if
 
@@ -864,8 +869,11 @@ enemy_dielist={}
 			      else
 			       damage=10
 			     end if
+			     
+	         if enemy_has_condition_effect(ehandle, "Invulnerable")!=1 then
 				  
-                  enemy_list[ehandle][ENEMY_HEALTH] -= damage  -- example damage
+                    enemy_list[ehandle][ENEMY_HEALTH] -= damage  -- example damage
+                  end if
 				
 				  if enemy_list[ehandle][ENEMY_HEALTH] <=0 then
 				     
@@ -2055,7 +2063,7 @@ else
   
   -- Update all enemies
    nearby = grid_get_nearby(player_x, player_y, 3)
-    
+    enemy_update_player_tracking()
     for i = 1 to length(nearby) do
         if length(nearby[i]) then
             enemy_update(nearby[i][1],deltatime)
@@ -2115,9 +2123,14 @@ end procedure
 
 --constant  enemy_type_list= TERRAIN_MOUNTAINS_ENEMIES --TERRAIN_NONE_ENEMIES 
 
-constant  enemy_type_list= TERRAIN_SHORESAND_ENEMIES & TERRAIN_SHOREPLAINS_ENEMIES & TERRAIN_MIDFOREST_ENEMIES & TERRAIN_MIDPLAINS_ENEMIES & TERRAIN_MIDSAND_ENEMIES & TERRAIN_MOUNTAINS_ENEMIES
+constant  enemy_type_list= TERRAIN_SHORESAND_ENEMIES & TERRAIN_SHOREPLAINS_ENEMIES & TERRAIN_MIDFOREST_ENEMIES & TERRAIN_MIDPLAINS_ENEMIES & TERRAIN_MIDSAND_ENEMIES & TERRAIN_MOUNTAINS_ENEMIES&TERRAIN_NONE_ENEMIES 
 
---constant  enemy_type_list=TERRAIN_NONE_ENEMIES
+--constant  enemy_type_list=TERRAIN_MOUNTAINS_ENEMIES
+
+
+--ENEMY_SNAKEPIT_DART_THROWER,
+    --ENEMY_SNAKEPIT_GUARD,
+--constant  enemy_type_list= ----{ENEMY_PIT_SNAKE,ENEMY_PIT_VIPER,ENEMY_FIRE_PYTHON,ENEMY_BROWN_PYTHON,ENEMY_YELLOW_PYTHON,ENEMY_GREATER_PIT_SNAKE,ENEMY_GREATER_PIT_VIPER,ENEMY_STHENO_THE_SNAKE_QUEEN,ENEMY_STHENO_PET,ENEMY_STHENO_SWARM}
 
 
 procedure create_enemy_from_name(sequence name, atom x,atom y)
@@ -2130,7 +2143,7 @@ integer ret
    
 --ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(object_type_from_name(name),object_sprite),(object_delta_mod(object_type_from_name(name),object_indexx)*7), object_type_from_name(name) )
 
-ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(object_type_from_name(name),object_sprite),(object_delta_mod(object_type_from_name(name),object_indexx)*7), object_type_from_name(name) )
+ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(object_type_from_name(name),object_sprite),(object_delta_mod(object_type_from_name(name),object_indexx)), object_type_from_name(name) )
 
 end procedure
 
@@ -2138,7 +2151,7 @@ procedure create_enemy_from_id(integer id, atom x,atom y)
 integer ret
 
 
-ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(id,object_sprite),(object_delta_mod(id,object_indexx)*7), id )
+ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(id,object_sprite),(object_delta_mod(id,object_indexx)), id )
 
 end procedure
 
@@ -2164,6 +2177,8 @@ end procedure
 
 procedure key(integer keycode,integer mode,integer y)
 integer ret,index
+sequence nearby
+
  	if keycode = VK_ESCAPE then
   	  ewPostQuitMessage(#10)
           abort(0)
@@ -2184,30 +2199,36 @@ integer ret,index
 		end for	
 			
          end if
-		    if key_check(' ')  then
+         
+         if key_check(' ')  then
 		    
 		    
 		   --ENEMY_ORYX_THE_MAD_GOD_2
 		   --create_enemy_from_name("Oryx the Mad God 2", camera_x,camera_y)
 		   --create_enemy_from_name("Piratess", camera_x+2,camera_y)
-		   create_enemy_from_name("Snake", camera_x+4,camera_y)
-		   create_enemy_from_name("Poison Scorpion", camera_x+6,camera_y)
-		   create_enemy_from_name("Bandit Leader", camera_x+8,camera_y)
-		   create_enemy_from_name("Bandit", camera_x+10,camera_y)
+		   --create_enemy_from_name("Snake", camera_x+4,camera_y)
+		   --create_enemy_from_name("Poison Scorpion", camera_x+6,camera_y)
+		   --create_enemy_from_name("Bandit Leader", camera_x+8,camera_y)
+		   --create_enemy_from_name("Bandit", camera_x+10,camera_y)
 		   
-		   create_enemy_from_name("Red Gelatinous Cube", camera_x,camera_y+4)
-		   create_enemy_from_name("Purple Gelatinous Cube", camera_x,camera_y+6)
-		   create_enemy_from_name("Green Gelatinous Cube", camera_x,camera_y+8)
+		   --create_enemy_from_name("Red Gelatinous Cube", camera_x,camera_y+4)
+		   --create_enemy_from_name("Purple Gelatinous Cube", camera_x,camera_y+6)
+		   --create_enemy_from_name("Green Gelatinous Cube", camera_x,camera_y+8)
 		   
-		   --create_enemy_from_name("Djinn", camera_x,camera_y+4)
-		   --create_enemy_from_name("White Demon", camera_x,camera_y+4)
-		   --create_enemy_from_name("Sprite God", camera_x,camera_y+4)
+		   create_enemy_from_name("Djinn", camera_x,camera_y+2)
+		   create_enemy_from_name("White Demon", camera_x,camera_y+4)
+		   create_enemy_from_name("Sprite God", camera_x,camera_y+6)
+		   create_enemy_from_name("Flying Brain", camera_x+2,camera_y)
 		   
-		   
+		    
 		  
-			
-
-			
+		   nearby = {}--grid_get_nearby(player_x, player_y, 1)
+            
+		for i = 1 to length(nearby) do
+        if length(nearby[i]) then
+          puts(1, enemy_list[i][ENEMY_NAME]&"\n")
+        end if
+    end for  	
 			 
            end if
 		   if key_check('Q')  then
