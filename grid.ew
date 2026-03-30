@@ -21,15 +21,6 @@ for r = 1 to grid_rows do
 end for
 
 
-global procedure grid_init()
-empty = {}
-empty_freelist = {}
-
-for r = 1 to grid_rows do
-    empty = append(empty, repeat({}, grid_cols))
-    empty_freelist = append(empty_freelist, repeat({}, grid_cols))
-end for
-end procedure 
 
 ------------------------------------------------------------
 -- Get chunk from world coordinates
@@ -81,6 +72,21 @@ global procedure grid_remove_enemy(integer enemy)
         end for
     end for
 end procedure
+
+
+global procedure grid_init()
+
+
+empty = {}
+    empty_freelist = {}
+    class_list = {}
+    class_freelist = {}
+
+for r = 1 to grid_rows do
+    empty = append(empty, repeat({}, grid_cols))
+    empty_freelist = append(empty_freelist, repeat({}, grid_cols))
+end for
+end procedure 
 
 global procedure grid_saved_state()
 saved_state={
@@ -361,12 +367,17 @@ global procedure grid_debug_summary_full()
     used_cells = 0
     free_cells = 0
 
+   --this very costly for huge amounts of enemys a better way would be to increment in the new and delete make the variables global 
     for i = 1 to total do
         if length(class_list[i]) > 0 then
             active += 1
         end if
     end for
-
+    
+    
+   -- this also clostly 512 by 512--262144
+   --add two new vaaibles to the grid usedcells and freecells increment them in the the correct functions mostly like when inserting into the grid and wehn removing from the grid 
+   --maybe would need to just use two global vaaible to keep track of the figuers 
     for y = 1 to grid_rows do
         for x = 1 to grid_cols do
             used_cells += length(empty[y][x])

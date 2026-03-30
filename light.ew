@@ -16,6 +16,12 @@ constant light_b = 5
 constant light_val=6
 constant light_radius=7
 
+global procedure light_init()
+class_list={}
+class_freelist={}
+light_freelist={}
+end procedure 
+
 
 global function light_new(atom x, atom y, atom r, atom g, atom b, atom val, atom radius)
   integer handle

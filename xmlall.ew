@@ -571,7 +571,7 @@ global function object_projectile_delta( integer index, integer bullettype ,inte
 end function
 
 
-procedure object_bulletid_settype()
+procedure object_bulletid_settype_backup()
 integer id
   for i=1 to length(object_list) do
     if length(object_list[i]) then
@@ -586,6 +586,43 @@ integer id
     end if
   end for
  
+end procedure
+--object_bulletid_settype()
+
+
+procedure object_bulletid_settype()
+    integer pcount
+    sequence id
+    object rawid
+
+    for i = 1 to length(object_list) do
+        if length(object_list[i]) then
+
+            if sequence(object_list[i][object_projectile]) then
+                pcount = length(object_list[i][object_projectile])
+
+                for p = 1 to pcount do
+                    if sequence(object_list[i][object_projectile][p]) then
+                        rawid = object_list[i][object_projectile][p][object_projectile_ObjectId][2]
+
+                        if sequence(rawid) and length(rawid) > 0 then
+                            id = sprint(projectile_type_from_name(rawid))
+
+                            if length(id) > 0 then
+                                object_list[i][object_projectile][p][object_projectile_ObjectId][2] = id
+                            else
+                                puts(1, "failed projectile lookup: object=" 
+                                    & object_delta(i, object_idd) 
+                                    & " projectile=" & sprint(p) 
+                                    & " objectid=" & rawid & "\n")
+                            end if
+                        end if
+                    end if
+                end for
+            end if
+
+        end if
+    end for
 end procedure
 object_bulletid_settype()
 

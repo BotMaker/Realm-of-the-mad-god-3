@@ -1,4 +1,9 @@
+with profile_time
+
+
 global integer lighting_switch 
+global integer autonexus_switch
+autonexus_switch=0
 lighting_switch = 0
 global integer debug_draw_switch
 debug_draw_switch = 0
@@ -658,10 +663,10 @@ procedure projectile_enemy_update_new()
                 list[j][projectile_enemy_x] = x
                 list[j][projectile_enemy_y] = y
 
-               stype = resolve_any_objectid(object_projectile_delta(ctype, pindex, object_projectile_ObjectId))
+               --stype = resolve_any_objectid(object_projectile_delta(ctype, pindex, object_projectile_ObjectId))
                --stype = resolve_projectile_objectid(object_projectile_delta(ctype, pindex, object_projectile_ObjectId)) 
                 --stype = resolve_object_type(object_projectile_delta(ctype, pindex, object_projectile_ObjectId))
-                --stype = real(object_projectile_delta(ctype, pindex, object_projectile_ObjectId))
+                stype = real(object_projectile_delta(ctype, pindex, object_projectile_ObjectId))
 
 if stype <= 0 then
     puts(1, "bad stype ctype=" & sprint(ctype) & " pindex=" & sprint(pindex) & "\n")
@@ -1858,7 +1863,7 @@ end if
 
     -- Sleep if the frame was too fast
     if deltatime < TARGET_FRAME_MS then
-      usleep((TARGET_FRAME_MS - floor(deltatime)) )  -- convert ms → µs
+      --usleep((TARGET_FRAME_MS - floor(deltatime)) )  -- convert ms → µs
     end if
 
    
@@ -1934,12 +1939,13 @@ frametime =current_time()
     player_unhitable_set=1
   end if
 
-  if player_health<=101 and equal(map_name,"nexus.wmap")=1 then
+  if player_health<=101 and equal(map_name,"world1.wmap")=1 and autonexus_switch=1 then
    preworld_player_x=player_x
    preworld_player_y=player_y
    enemy_save_state()
 grid_saved_state()
     enemy_init()
+    light_init()
              projectile_enemy_init()
              projectile_init()
              grid_init()
@@ -2147,12 +2153,31 @@ ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(object_type_from_name(name),obje
 
 end procedure
 
-procedure create_enemy_from_id(integer id, atom x,atom y)
-integer ret
+
+procedure create_enemy_from_id(integer id, atom x, atom y)
+    integer sprite_sheet
+    integer indexx,images_per_row
+    integer ret,frame_index
+
+    sprite_sheet = object_delta_mod(id, object_sprite)
+    indexx = object_delta_mod(id, object_indexx)
+
+    if sprite_sheet < 1 or sprite_sheet > length(spritesheet_list) then
+        printf(1, "ERROR: enemy id %d has invalid sprite_sheet = %d\n", {id, sprite_sheet})
+        return
+    end if
+
+    images_per_row = spritesheet_list[sprite_sheet][spritesheet_texture_images_per_row]
+
+    
+    if images_per_row=7 then
+       frame_index = indexx*7
+    else
+       frame_index = indexx
+    end if
 
 
-ret=enemy_new(x, y, 100.0, 0.1,object_delta_mod(id,object_sprite),(object_delta_mod(id,object_indexx)), id )
-
+    ret = enemy_new(x, y, 100.0, 0.1, sprite_sheet, frame_index, id)
 end procedure
 
 
@@ -2193,7 +2218,7 @@ sequence nearby
           key_add(keycode)
           
           if key_check('P')  then
-                 for i=1 to 1600 do
+                 for i=1 to 16000 do
 
                    create_random_enemy_at_random_position()
 		end for	
@@ -2246,11 +2271,11 @@ sequence nearby
 		     lighting_switch=not(lighting_switch)
 		   end if
 		   
-		   if key_check('1')  then
+		   if key_check('1') and equal(map_name,"world1.wmap")!=1 then
 		   
 		     
 		     enemy_init()
-		     
+             light_init()
              projectile_enemy_init()
              projectile_init()
              grid_init()
@@ -2282,8 +2307,13 @@ sequence nearby
 			 map_load("map.wmap")
 		   end if
 		   
-		   if key_check('3')  then
-		     enemy_init()
+		   if key_check('3')  and equal(map_name,"nexus.wmap")!=1 then
+   preworld_player_x=player_x
+   preworld_player_y=player_y
+   enemy_save_state()
+grid_saved_state()
+    enemy_init()
+    light_init()
              projectile_enemy_init()
              projectile_init()
              grid_init()
